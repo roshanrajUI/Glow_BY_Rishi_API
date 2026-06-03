@@ -1,0 +1,40 @@
+{
+  "name": "glow_by_rishi_api",
+  "version": "1.0.0",
+  "description": "It is a website for a beautican",
+  "main": "index.js",
+  "scripts": {
+    "tsoa": "tsoa spec",
+    "dev": "npm run tsoa && nodemon src/server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roshanrajUI/Glow_BY_Rishi_API.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/roshanrajUI/Glow_BY_Rishi_API/issues"
+  },
+  "homepage": "https://github.com/roshanrajUI/Glow_BY_Rishi_API#readme",
+    "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/swagger-ui-express": "^4.1.8",
+    "nodemon": "^3.1.11"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "express": "^5.2.1",
+    "joi": "^18.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.17.4",
+    "swagger-ui-express": "^5.0.1",
+    "tsoa": "^7.0.0-alpha.0",
+    "typedi": "^0.10.0",
+    "typeorm": "^0.3.28"
+  }
+}
