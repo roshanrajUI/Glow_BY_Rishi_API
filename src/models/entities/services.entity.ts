@@ -1,0 +1,38 @@
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+
+@Entity("services")
+export default class Service {
+  @PrimaryGeneratedColumn("uuid", { name: "service_id" })
+  serviceId!: string;
+
+  @Column("varchar", { name: "service_name", length: 100, nullable: false })
+  serviceName!: string;
+
+  @Column("decimal", {
+    name: "price",
+    precision: 10,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
+  price!: number;
+
+  @Column("text", { name: "description", nullable: true })
+  description?: string;
+
+  @Column("boolean", { name: "is_active", default: true })
+  isActive!: boolean;
+
+  @Column("timestamp", {
+    name: "created_at",
+    default: () => "CURRENT_TIMESTAMP",
+  })
+  createdAt!: Date;
+
+  @Column("timestamp", {
+    name: "updated_at",
+    default: () => "CURRENT_TIMESTAMP",
+    onUpdate: "CURRENT_TIMESTAMP",
+  })
+  updatedAt!: Date;
+}

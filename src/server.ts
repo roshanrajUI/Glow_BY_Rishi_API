@@ -1,0 +1,32 @@
+import express from "express";
+import path from "path";
+import SwaggerMiddlewareConfig from "./middlewares/swagger";
+import dbConfig from "./config/db.config";
+
+const app = express();
+
+app.use(express.json());
+app.use(express.static("public"));
+SwaggerMiddlewareConfig.setUp(app);
+// CorsMiddleware.setup(app);
+
+/* Serve swagger.json */
+app.get("/swagger.json", express.static(path.resolve(process.cwd(), "public")));
+
+// app.use("/api/auth", authRouter);
+// app.use("/api", AuthMiddleware.setup(), mainRouter);
+
+//handle err globally
+// app.use(GlobalErrorHandling.setup());
+/* Setup Swagger */
+
+dbConfig
+  .initialize()
+  .then(() => {
+    app.listen(8000, () => {
+      console.log("Server running on port 8000");
+    });
+  })
+  .catch((err) => {
+    console.log("Failed to initialize the db", err);
+  });
