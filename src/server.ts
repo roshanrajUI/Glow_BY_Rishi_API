@@ -2,6 +2,8 @@ import express from "express";
 import path from "path";
 import SwaggerMiddlewareConfig from "./middlewares/swagger";
 import dbConfig from "./config/db.config";
+import myWorkRouter from "./routers/my-work.router";
+import myServicesRouter from "./routers/my-services.router";
 
 const app = express();
 
@@ -14,6 +16,8 @@ SwaggerMiddlewareConfig.setUp(app);
 app.get("/swagger.json", express.static(path.resolve(process.cwd(), "public")));
 
 // app.use("/api/auth", authRouter);
+app.use("/api/services", myServicesRouter);
+app.use("/api/my-works", myWorkRouter);
 // app.use("/api", AuthMiddleware.setup(), mainRouter);
 
 //handle err globally
@@ -23,8 +27,8 @@ app.get("/swagger.json", express.static(path.resolve(process.cwd(), "public")));
 dbConfig
   .initialize()
   .then(() => {
-    app.listen(8000, () => {
-      console.log("Server running on port 8000");
+    app.listen(3000, () => {
+      console.log("Server running on port 3000");
     });
   })
   .catch((err) => {

@@ -5,8 +5,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import Service from "./services.entity";
 import User from "./users.entity";
+import MyService from "./my-services.entity";
 
 @Entity("work_portfolio")
 export default class WorkPortfolio {
@@ -47,9 +47,9 @@ export default class WorkPortfolio {
   })
   updatedAt!: Date;
 
-  @ManyToOne(() => Service)
+  @ManyToOne(() => MyService)
   @JoinColumn({ name: "service_id" })
-  service!: Service;
+  service!: MyService;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: "user_id" })

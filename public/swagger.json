@@ -6,7 +6,202 @@
 		"parameters": {},
 		"requestBodies": {},
 		"responses": {},
-		"schemas": {},
+		"schemas": {
+			"MyService": {
+				"properties": {
+					"serviceId": {
+						"type": "string"
+					},
+					"serviceName": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"serviceId",
+					"serviceName",
+					"price",
+					"isActive",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"User": {
+				"properties": {
+					"userId": {
+						"type": "string"
+					},
+					"userName": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"phoneNumber": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"role": {
+						"type": "string"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"userId",
+					"userName",
+					"email",
+					"phoneNumber",
+					"password",
+					"role",
+					"isActive",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"WorkPortfolio": {
+				"properties": {
+					"workId": {
+						"type": "string"
+					},
+					"serviceId": {
+						"type": "string"
+					},
+					"userId": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"imageUrl": {
+						"type": "string"
+					},
+					"workDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"service": {
+						"$ref": "#/components/schemas/MyService"
+					},
+					"user": {
+						"$ref": "#/components/schemas/User"
+					}
+				},
+				"required": [
+					"workId",
+					"serviceId",
+					"userId",
+					"title",
+					"imageUrl",
+					"workDate",
+					"isActive",
+					"createdAt",
+					"updatedAt",
+					"service",
+					"user"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PaginationWithData_WorkPortfolio_": {
+				"properties": {
+					"data": {
+						"items": {
+							"$ref": "#/components/schemas/WorkPortfolio"
+						},
+						"type": "array"
+					},
+					"totalSize": {
+						"type": "number",
+						"format": "double"
+					},
+					"pageSize": {
+						"type": "number",
+						"format": "double"
+					},
+					"pageNumber": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"data",
+					"totalSize",
+					"pageSize",
+					"pageNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"MyWorkRequest": {
+				"properties": {
+					"serviceId": {
+						"type": "string"
+					},
+					"pageSize": {
+						"type": "number",
+						"format": "double"
+					},
+					"pageNumber": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"serviceId",
+					"pageSize",
+					"pageNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
 		"securitySchemes": {
 			"bearerAuth": {
 				"type": "http",
@@ -25,6 +220,63 @@
 		"contact": {}
 	},
 	"paths": {
+		"/api/my-works": {
+			"post": {
+				"operationId": "GetMyWorks",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PaginationWithData_WorkPortfolio_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"My Works"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/MyWorkRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/services/all": {
+			"get": {
+				"operationId": "GetAllServices",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/MyService"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"My Services"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
 		"/api/auth/register": {
 			"post": {
 				"operationId": "CreateUser",

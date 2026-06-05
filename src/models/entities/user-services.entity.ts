@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import User from "./users.entity";
-import Service from "./services.entity";
+import MyService from "./my-services.entity";
 
 @Entity("user_services")
 export default class UserService {
@@ -39,7 +39,7 @@ export default class UserService {
   @JoinColumn({ name: "user_id" })
   user!: User;
 
-  @ManyToOne(() => Service)
+  @ManyToOne(() => MyService)
   @JoinColumn({ name: "service_id" })
-  service!: Service;
+  service!: MyService;
 }
