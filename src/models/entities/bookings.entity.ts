@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import Client from "./clients.entity";
+import { BookingStatus } from "../interfaces/booking.interfaces";
 
 @Entity("bookings")
 export default class Booking {
@@ -38,7 +39,7 @@ export default class Booking {
     enum: ["Pending", "Confirmed", "Completed", "Cancelled"],
     default: "Pending",
   })
-  status!: string;
+  status!: BookingStatus;
 
   @Column("text", { name: "notes", nullable: true })
   notes?: string;

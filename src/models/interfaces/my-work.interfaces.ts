@@ -1,5 +1,6 @@
 export interface MyWorkRequest {
-  serviceId: string;
+  serviceId?: string;
+  categoryId?: string;
   pageSize: number;
   pageNumber: number;
 }

@@ -6,6 +6,7 @@ import Booking from "../models/entities/bookings.entity";
 import BookingService from "../models/entities/booking-services.entity";
 import UserService from "../models/entities/user-services.entity";
 import MyService from "../models/entities/my-services.entity";
+import Category from "../models/entities/service-category.entity";
 
 const dbConfig: DataSource = new DataSource({
   type: "mysql",
@@ -17,6 +18,7 @@ const dbConfig: DataSource = new DataSource({
   timezone: "+05:30",
   entities: [
     User,
+    Category,
     MyService,
     Client,
     WorkPortfolio,

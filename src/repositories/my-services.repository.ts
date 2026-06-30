@@ -9,4 +9,14 @@ export default class ServicesRepository {
   getAllServices(): Promise<MyService[]> {
     return this.serviceRepo.findBy({ isActive: true });
   }
+
+  getServicesByCategory(categoryId: string): Promise<MyService[]> {
+    return this.serviceRepo.find({
+      where: {
+        categoryId,
+        isActive: true,
+      },
+      relations: { category: true },
+    });
+  }
 }

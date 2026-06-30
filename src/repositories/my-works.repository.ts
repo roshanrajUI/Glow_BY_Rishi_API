@@ -11,13 +11,26 @@ export class MyWorkRepository {
   async getMyWorks(
     reqBody: MyWorkRequest,
   ): Promise<PaginationWithData<WorkPortfolio>> {
-    const { serviceId, pageSize, pageNumber } = reqBody;
+    const { categoryId, serviceId, pageSize, pageNumber } = reqBody;
     const skip = (pageNumber - 1) * pageSize;
+
+    const where: any = { isActive: true };
+
+    if (categoryId && serviceId) {
+      where.categoryId = categoryId;
+      where.serviceId = serviceId;
+    } else if (serviceId) {
+      where.serviceId = serviceId;
+    } else if (categoryId) {
+      where.service = { categoryId };
+    }
+
     const [myWorks, totalSize] = await this.myWorkRepository.findAndCount({
-      where: serviceId ? { isActive: true, serviceId } : { isActive: true },
+      where,
       skip,
       take: pageSize,
       order: { createdAt: "DESC" },
+      relations: { service: { category: true } },
     });
 
     const paginationWithData = {

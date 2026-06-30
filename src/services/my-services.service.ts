@@ -9,4 +9,8 @@ export default class ServicesService {
   getAllServices(): Promise<MyService[]> {
     return this.servicesRepository.getAllServices();
   }
+
+  getServicesByCategory(categoryId: string): Promise<MyService[]> {
+    return this.servicesRepository.getServicesByCategory(categoryId);
+  }
 }

@@ -11,6 +11,6 @@ export default class MyWorkService {
   async getMyWorks(
     reqBody: MyWorkRequest,
   ): Promise<PaginationWithData<WorkPortfolio>> {
-    return this.myWorkRepository.getMyWorks(reqBody);
+    return await this.myWorkRepository.getMyWorks(reqBody);
   }
 }

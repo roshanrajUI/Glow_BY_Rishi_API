@@ -7,10 +7,11 @@ const myWorkController = Container.get(MyWorkController);
 
 myWorkRouter.post("/", async (req, res) => {
   try {
-    let { serviceId, pageSize, pageNumber } = req.body;
+    let { categoryId, serviceId, pageSize, pageNumber } = req.body;
 
     const reqBody = {
       serviceId,
+      categoryId,
       pageSize: pageSize || 10,
       pageNumber: pageNumber || 1,
     };

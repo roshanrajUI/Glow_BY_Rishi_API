@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import Category from "./service-category.entity";
 
 @Entity("services")
 export default class MyService {
@@ -20,6 +27,9 @@ export default class MyService {
   @Column("text", { name: "description", nullable: true })
   description?: string;
 
+  @Column("varchar", { name: "category_id", nullable: false })
+  categoryId?: string;
+
   @Column("boolean", { name: "is_active", default: true })
   isActive!: boolean;
 
@@ -35,4 +45,8 @@ export default class MyService {
     onUpdate: "CURRENT_TIMESTAMP",
   })
   updatedAt!: Date;
+
+  @ManyToOne(() => Category)
+  @JoinColumn({ name: "category_id" })
+  category!: Category;
 }

@@ -4,6 +4,8 @@ import SwaggerMiddlewareConfig from "./middlewares/swagger";
 import dbConfig from "./config/db.config";
 import myWorkRouter from "./routers/my-work.router";
 import myServicesRouter from "./routers/my-services.router";
+import bookingRouter from "./routers/bookings.router";
+import categoryRouter from "./routers/category.router";
 
 const app = express();
 
@@ -18,6 +20,9 @@ app.get("/swagger.json", express.static(path.resolve(process.cwd(), "public")));
 // app.use("/api/auth", authRouter);
 app.use("/api/services", myServicesRouter);
 app.use("/api/my-works", myWorkRouter);
+app.use("/api/bookings", bookingRouter);
+app.use("/api/categories", categoryRouter);
+
 // app.use("/api", AuthMiddleware.setup(), mainRouter);
 
 //handle err globally
