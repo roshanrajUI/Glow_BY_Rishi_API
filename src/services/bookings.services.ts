@@ -10,11 +10,44 @@ import Booking from "../models/entities/bookings.entity";
 export default class BookingService {
   constructor(private readonly bookingRepository: BookingRepository) {}
 
-  getAllBookingsByStatus(status?: BookingStatus): Promise<Booking[]> {
-    return this.bookingRepository.getAllBookingsByStatus(status);
+  async createBooking(booking: Booking): Promise<Booking> {
+    return await this.bookingRepository.createBooking(booking);
   }
 
-  getBookingReviews(): Promise<BookingReviews[]> {
-    return this.bookingRepository.getBookingReviews();
+  async getAllBookings(): Promise<Booking[]> {
+    return await this.bookingRepository.getAllBookings();
+  }
+
+  async getAllBookingsByStatus(status?: BookingStatus): Promise<Booking[]> {
+    return await this.bookingRepository.getAllBookingsByStatus(status);
+  }
+
+  async getBookingReviews(): Promise<BookingReviews[]> {
+    return await this.bookingRepository.getBookingReviews();
+  }
+
+  async getBookingById(bookingId: string): Promise<Booking | null> {
+    return await this.bookingRepository.getBookingById(bookingId);
+  }
+
+  async updateBooking(booking: Booking): Promise<Booking> {
+    return await this.bookingRepository.updateBooking(booking);
+  }
+
+  async updateBookingStatus(
+    bookingId: string,
+    status: BookingStatus,
+  ): Promise<Booking | null> {
+    return await this.bookingRepository.updateBookingStatus(bookingId, status);
+  }
+
+  async getBookingsByClientPhoneNumber(
+    phoneNumber: string,
+  ): Promise<Booking[]> {
+    return await this.bookingRepository.getBookingsByClientNumber(phoneNumber);
+  }
+
+  async getBookingsByClientId(clientId: string): Promise<Booking[]> {
+    return await this.bookingRepository.getBookingsByClientId(clientId);
   }
 }

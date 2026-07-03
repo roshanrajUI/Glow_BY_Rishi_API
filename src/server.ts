@@ -6,6 +6,7 @@ import myWorkRouter from "./routers/my-work.router";
 import myServicesRouter from "./routers/my-services.router";
 import bookingRouter from "./routers/bookings.router";
 import categoryRouter from "./routers/category.router";
+import clientRouter from "./routers/client.router";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use("/api/services", myServicesRouter);
 app.use("/api/my-works", myWorkRouter);
 app.use("/api/bookings", bookingRouter);
 app.use("/api/categories", categoryRouter);
+app.use("/api/clients", clientRouter);
 
 // app.use("/api", AuthMiddleware.setup(), mainRouter);
 

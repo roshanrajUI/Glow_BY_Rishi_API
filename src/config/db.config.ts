@@ -25,6 +25,7 @@ const dbConfig: DataSource = new DataSource({
     Booking,
     BookingService,
     UserService,
+    Client,
   ],
 });
 

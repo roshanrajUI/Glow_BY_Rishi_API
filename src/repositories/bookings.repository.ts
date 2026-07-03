@@ -11,8 +11,19 @@ export class BookingRepository {
   constructor() {}
   bookingRepository = dbConfig.getRepository(Booking);
 
-  getAllBookingsByStatus(status?: BookingStatus): Promise<Booking[]> {
-    return this.bookingRepository.find({
+  async createBooking(booking: Booking): Promise<Booking> {
+    return await this.bookingRepository.save(booking);
+  }
+
+  async getAllBookings(): Promise<Booking[]> {
+    return await this.bookingRepository.find({
+      where: { isActive: true },
+      relations: { client: true },
+    });
+  }
+
+  async getAllBookingsByStatus(status?: BookingStatus): Promise<Booking[]> {
+    return await this.bookingRepository.find({
       where: status ? { isActive: true, status } : { isActive: true },
       relations: { client: true },
     });
@@ -20,7 +31,6 @@ export class BookingRepository {
 
   async getBookingReviews(): Promise<BookingReviews[]> {
     const allBooking = await this.getAllBookingsByStatus("Completed");
-    console.log(allBooking);
 
     const bookingReviews: BookingReviews[] = allBooking
       .filter(
@@ -59,5 +69,51 @@ export class BookingRepository {
         };
       });
     return bookingReviews;
+  }
+
+  async getBookingById(bookingId: string): Promise<Booking | null> {
+    const selectedBooking = await this.bookingRepository.findOne({
+      where: { bookingId, isActive: true },
+      relations: { client: true },
+    });
+    return selectedBooking;
+  }
+
+  async updateBooking(booking: Booking): Promise<Booking> {
+    return this.bookingRepository.save(booking);
+  }
+
+  async updateBookingStatus(
+    bookingId: string,
+    status: BookingStatus,
+  ): Promise<Booking | null> {
+    const bookingToUpdate = await this.getBookingById(bookingId);
+    if (!bookingToUpdate) {
+      throw new Error("Booking not found");
+    }
+    bookingToUpdate.status = status;
+    return this.bookingRepository.save(bookingToUpdate);
+  }
+
+  async deleteBooking(bookingId: string): Promise<void> {
+    const bookingToDelete = await this.getBookingById(bookingId);
+    if (bookingToDelete) {
+      bookingToDelete.isActive = false;
+      await this.bookingRepository.save(bookingToDelete);
+    }
+  }
+
+  async getBookingsByClientNumber(phoneNumber?: string): Promise<Booking[]> {
+    return this.bookingRepository.find({
+      where: { isActive: true, client: { phoneNumber } },
+      relations: { client: true },
+    });
+  }
+
+  async getBookingsByClientId(clientId?: string): Promise<Booking[]> {
+    return this.bookingRepository.find({
+      where: { isActive: true, client: { clientId } },
+      relations: { client: true },
+    });
   }
 }
