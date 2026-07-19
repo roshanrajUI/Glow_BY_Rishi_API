@@ -8,7 +8,7 @@ import {
 import Booking from "./bookings.entity";
 import MyService from "./my-services.entity";
 
-@Entity("booking-services")
+@Entity("booking_services")
 export default class BookingService {
   @PrimaryGeneratedColumn("uuid", { name: "booking_service_id" })
   bookingServiceId!: string;
@@ -19,7 +19,7 @@ export default class BookingService {
   @Column("uuid", { name: "service_id" })
   serviceId!: string;
 
-  @Column("char", { name: " assigned_user_id", length: 36, nullable: false })
+  @Column("char", { name: "assigned_user_id", length: 36, nullable: false })
   assignedUserId!: string;
 
   @Column("decimal", {

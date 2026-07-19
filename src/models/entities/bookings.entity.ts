@@ -3,10 +3,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import Client from "./clients.entity";
 import { BookingStatus } from "../interfaces/booking.interfaces";
+import BookingService from "./booking-services.entity";
 
 @Entity("bookings")
 export default class Booking {
@@ -77,4 +79,8 @@ export default class Booking {
   @ManyToOne(() => Client)
   @JoinColumn({ name: "client_id" })
   client!: Client;
+
+  @OneToMany(() => BookingService, (service) => service.booking)
+  @JoinColumn({ name: "booking_id", referencedColumnName: "booking_id" })
+  bookingServices!: BookingService[];
 }

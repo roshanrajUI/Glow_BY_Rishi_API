@@ -7,7 +7,12 @@ export default class ServicesRepository {
   private readonly serviceRepo = dbConfig.getRepository(MyService);
 
   getAllServices(): Promise<MyService[]> {
-    return this.serviceRepo.findBy({ isActive: true });
+    return this.serviceRepo.find({
+      where: {
+        isActive: true,
+      },
+      relations: { category: true },
+    });
   }
 
   getServicesByCategory(categoryId: string): Promise<MyService[]> {

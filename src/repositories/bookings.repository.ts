@@ -5,6 +5,7 @@ import {
   BookingReviews,
   BookingStatus,
 } from "../models/interfaces/booking.interfaces";
+import { ApiError } from "../models/api.erro";
 
 @Service()
 export class BookingRepository {
@@ -25,7 +26,7 @@ export class BookingRepository {
   async getAllBookingsByStatus(status?: BookingStatus): Promise<Booking[]> {
     return await this.bookingRepository.find({
       where: status ? { isActive: true, status } : { isActive: true },
-      relations: { client: true },
+      relations: { client: true, bookingServices: true },
     });
   }
 
@@ -52,6 +53,7 @@ export class BookingRepository {
           reviewText,
           isActive,
           client,
+          bookingServices,
         } = booking;
 
         return {
@@ -66,6 +68,7 @@ export class BookingRepository {
           reviewText,
           isActive,
           client,
+          bookingServices,
         };
       });
     return bookingReviews;
@@ -89,7 +92,7 @@ export class BookingRepository {
   ): Promise<Booking | null> {
     const bookingToUpdate = await this.getBookingById(bookingId);
     if (!bookingToUpdate) {
-      throw new Error("Booking not found");
+      throw new ApiError(404, "Booking Not Found");
     }
     bookingToUpdate.status = status;
     return this.bookingRepository.save(bookingToUpdate);

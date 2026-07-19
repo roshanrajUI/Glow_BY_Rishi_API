@@ -7,6 +7,9 @@ export default class CategoryRepo {
   private readonly categoryRepo = dbConfig.getRepository(Category);
 
   getAllCategory(): Promise<Category[]> {
-    return this.categoryRepo.findBy({ isActive: true });
+    return this.categoryRepo.find({
+      where: { isActive: true },
+      relations: { services: true },
+    });
   }
 }

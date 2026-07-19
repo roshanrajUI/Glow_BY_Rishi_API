@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import MyService from "./my-services.entity";
 
 @Entity("service_category")
 export default class Category {
@@ -26,4 +33,8 @@ export default class Category {
     onUpdate: "CURRENT_TIMESTAMP",
   })
   updatedAt!: Date;
+
+  @OneToMany(() => MyService, (service) => service.category)
+  @JoinColumn({ name: "category_id", referencedColumnName: "category_id" })
+  services!: MyService[];
 }

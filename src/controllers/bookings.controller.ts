@@ -24,8 +24,10 @@ export default class BookingsContoller {
   }
 
   @Get("/")
-  public async getAllBookings(): Promise<Booking[]> {
-    return await this.bookingService.getAllBookings();
+  public async getAllBookings(
+    @Query() status?: BookingStatus,
+  ): Promise<Booking[]> {
+    return await this.bookingService.getAllBookingsByStatus(status);
   }
 
   @Get("/{bookingId}")

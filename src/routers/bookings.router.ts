@@ -1,6 +1,7 @@
 import { Router } from "express";
 import Container from "typedi";
 import BookingsContoller from "../controllers/bookings.controller";
+import { BookingStatus } from "../models/interfaces/booking.interfaces";
 
 const bookingRouter = Router();
 const bookingController = Container.get(BookingsContoller);
@@ -17,7 +18,10 @@ bookingRouter.post("/", async (req, res) => {
 
 bookingRouter.get("/", async (req, res) => {
   try {
-    const result = await bookingController.getAllBookings();
+    const status: BookingStatus | undefined = req.query.status as
+      | BookingStatus
+      | undefined;
+    const result = await bookingController.getAllBookings(status);
     res.status(200).send(result);
   } catch (error) {
     console.log("Error Fetching Booking", error);
@@ -60,7 +64,7 @@ bookingRouter.post("/update", async (req, res) => {
   }
 });
 
-bookingRouter.post("/update-status", async (req, res) => {
+bookingRouter.post("/update-status", async (req, res, next) => {
   try {
     const result = await bookingController.updateBookingStatus(req.body);
     if (result) {
@@ -69,8 +73,8 @@ bookingRouter.post("/update-status", async (req, res) => {
       res.status(404).send({ message: "Booking not found" });
     }
   } catch (error) {
-    console.log("Error Updating Booking Status", error);
-    res.status(500).send({ message: "Internal server error" });
+    console.error("Error Updating Booking Status", error);
+    next(error);
   }
 });
 
