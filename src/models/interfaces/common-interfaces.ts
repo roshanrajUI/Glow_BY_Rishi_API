@@ -11,3 +11,12 @@ export interface CategoryCreate {
   description: string;
   isActive?: boolean;
 }
+
+export interface ServiceCreate {
+  serviceId?: string;
+  categoryId: string;
+  serviceName: string;
+  price: number;
+  description: string;
+  isActive: boolean;
+}

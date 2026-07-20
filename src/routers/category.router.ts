@@ -2,7 +2,7 @@ import { Router } from "express";
 import Container from "typedi";
 import { CategoryController } from "../controllers/category.controller";
 import { Validation } from "../middlewares/validation";
-import { CreateCategory } from "../joi-schemas/category-create";
+import { CreateCategory } from "../models/joi-schemas/category-create";
 
 const categoryRouter = Router();
 const categoryController = Container.get(CategoryController);
