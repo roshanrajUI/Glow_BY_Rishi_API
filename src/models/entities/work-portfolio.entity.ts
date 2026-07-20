@@ -16,8 +16,8 @@ export default class WorkPortfolio {
   @Column("uuid", { name: "service_id" })
   serviceId!: string;
 
-  @Column("uuid", { name: "user_id" })
-  userId!: string;
+  // @Column("uuid", { name: "user_id" })
+  // userId!: string;
 
   @Column("varchar", { name: "title", length: 100, nullable: false })
   title!: string;
@@ -51,7 +51,7 @@ export default class WorkPortfolio {
   @JoinColumn({ name: "service_id" })
   service!: MyService;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "user_id" })
-  user!: User;
+  // @ManyToOne(() => User)
+  // @JoinColumn({ name: "user_id" })
+  // user!: User;
 }

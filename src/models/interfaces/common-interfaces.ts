@@ -20,3 +20,11 @@ export interface ServiceCreate {
   description: string;
   isActive: boolean;
 }
+
+export interface MyWorkCreate {
+  serviceId: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  userId?: string;
+}
