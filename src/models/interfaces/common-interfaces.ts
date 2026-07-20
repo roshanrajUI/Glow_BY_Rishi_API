@@ -4,3 +4,10 @@ export interface PaginationWithData<T> {
   pageSize: number;
   pageNumber: number;
 }
+
+export interface CategoryCreate {
+  categoryId?: string;
+  categoryName: string;
+  description: string;
+  isActive?: boolean;
+}

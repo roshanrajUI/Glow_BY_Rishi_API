@@ -10,7 +10,6 @@ const allowedOrigins = (req: Request, res: Response, next: NextFunction) => {
   ];
   const origin = req.headers.origin!;
   const host = req.headers.host!;
-  console.log(`Origin: ${origin}, Host: ${host}`);
   if (origin && allowOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
