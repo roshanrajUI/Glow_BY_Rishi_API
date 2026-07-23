@@ -1,8 +1,10 @@
 import { Service } from "typedi";
 import { BookingRepository } from "../repositories/bookings.repository";
 import {
+  BookedInfo,
   BookingReviews,
   BookingStatus,
+  CreateBooking,
 } from "../models/interfaces/booking.interfaces";
 import Booking from "../models/entities/bookings.entity";
 
@@ -10,7 +12,7 @@ import Booking from "../models/entities/bookings.entity";
 export default class BookingService {
   constructor(private readonly bookingRepository: BookingRepository) {}
 
-  async createBooking(booking: Booking): Promise<Booking> {
+  async createBooking(booking: CreateBooking): Promise<BookedInfo> {
     return await this.bookingRepository.createBooking(booking);
   }
 

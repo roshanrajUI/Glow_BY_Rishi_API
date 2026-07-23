@@ -5,7 +5,7 @@ export type BookingStatus = "Pending" | "Confirmed" | "Completed" | "Cancelled";
 export interface BookingReviews {
   bookingId: string;
   clientId: string;
-  bookingDate: Date;
+  bookingDate: string;
   location: string;
   status: "Pending" | "Confirmed" | "Completed" | "Cancelled";
   notes?: string;
@@ -14,4 +14,28 @@ export interface BookingReviews {
   reviewDate?: Date;
   isActive: boolean;
   client: Client;
+}
+
+export interface CreateBooking {
+  bookedServices: CreateBookingService[];
+  bookingDate: string;
+  bookingTime: string;
+  location: string;
+  totalPrice: number;
+  clientName: string;
+  phoneNumber: string;
+  gmail: string;
+  description: string;
+}
+
+export interface CreateBookingService {
+  bookingId?: string;
+  serviceId: string;
+  price: number;
+}
+
+export interface BookedInfo {
+  bookingNumber: string;
+  bookingDate: string;
+  bookingTime: string;
 }

@@ -2,6 +2,7 @@ import { Service } from "typedi";
 import { ClientService } from "../services/client.service";
 import { Body, Get, Post, Route, Tags } from "tsoa";
 import Client from "../models/entities/clients.entity";
+import { ClientCreate } from "../models/interfaces/common-interfaces";
 
 @Route("api/clients")
 @Tags("Clients")
@@ -10,7 +11,7 @@ export class ClientController {
   constructor(readonly clientService: ClientService) {}
 
   @Post("/")
-  async createClient(@Body() client: Client): Promise<Client> {
+  async createClient(@Body() client: ClientCreate): Promise<Client> {
     return this.clientService.createClient(client);
   }
 

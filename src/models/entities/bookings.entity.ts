@@ -8,20 +8,23 @@ import {
 } from "typeorm";
 import Client from "./clients.entity";
 import { BookingStatus } from "../interfaces/booking.interfaces";
-import BookingService from "./booking-services.entity";
+import MyBookingServices from "./booking-services.entity";
 
 @Entity("bookings")
 export default class Booking {
   @PrimaryGeneratedColumn("uuid", { name: "booking_id" })
   bookingId!: string;
 
+  @Column("char", { name: "booking_number", nullable: false, unique: true })
+  bookingNumber!: string;
+
   @Column("uuid", { name: "client_id" })
   clientId!: string;
 
   @Column("date", { name: "booking_date", nullable: false })
-  bookingDate!: Date;
+  bookingDate!: string;
 
-  @Column("time", { name: "booking_time", nullable: false })
+  @Column("date", { name: "booking_time", nullable: false })
   bookingTime!: string;
 
   @Column("varchar", { name: "location", length: 255, nullable: true })
@@ -80,7 +83,7 @@ export default class Booking {
   @JoinColumn({ name: "client_id" })
   client!: Client;
 
-  @OneToMany(() => BookingService, (service) => service.booking)
+  @OneToMany(() => MyBookingServices, (service) => service.booking)
   @JoinColumn({ name: "booking_id", referencedColumnName: "booking_id" })
-  bookingServices!: BookingService[];
+  bookingServices!: MyBookingServices[];
 }

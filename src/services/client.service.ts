@@ -1,12 +1,13 @@
 import { Service } from "typedi";
 import clientsRepository from "../repositories/clients.repository";
 import Client from "../models/entities/clients.entity";
+import { ClientCreate } from "../models/interfaces/common-interfaces";
 
 @Service()
 export class ClientService {
   constructor(readonly clientRepository: clientsRepository) {}
 
-  async createClient(client: Client): Promise<Client> {
+  async createClient(client: ClientCreate): Promise<Client> {
     return await this.clientRepository.createClient(client);
   }
 

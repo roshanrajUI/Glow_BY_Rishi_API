@@ -66,9 +66,10 @@ CREATE TABLE clients (
 -- bookings
 CREATE TABLE bookings (
     booking_id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    booking_number CHAR(8) UNIQUE NOT NULL,
     client_id CHAR(36) NOT NULL,
-    booking_date DATE NOT NULL,
-    booking_time TIME NOT NULL,
+    booking_date DATETIME NOT NULL,
+    booking_time DATETIME NOT NULL,
     location VARCHAR(255),
     total_price DECIMAL(10,2) DEFAULT 0,
     status ENUM('Pending', 'Confirmed', 'Completed', 'Cancelled') DEFAULT 'Pending',
@@ -88,15 +89,15 @@ CREATE TABLE booking_services (
     booking_service_id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     booking_id CHAR(36) NOT NULL,
     service_id CHAR(36) NOT NULL,
-    assigned_user_id CHAR(36) NOT NULL,
-    service_price DECIMAL(10,2) NOT NULL,
+    -- assigned_user_id CHAR(36) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     FOREIGN KEY (booking_id) REFERENCES bookings(booking_id),
-    FOREIGN KEY (service_id) REFERENCES services(service_id),
-    FOREIGN KEY (assigned_user_id) REFERENCES users(user_id)
+    FOREIGN KEY (service_id) REFERENCES services(service_id)
+    -- FOREIGN KEY (assigned_user_id) REFERENCES users(user_id)
 );
 
 -- work_portfolio

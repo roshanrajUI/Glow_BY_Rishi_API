@@ -28,3 +28,10 @@ export interface MyWorkCreate {
   imageUrl: string;
   userId?: string;
 }
+
+export interface ClientCreate {
+  clientName: string;
+  phoneNumber: string;
+  gmail?: string;
+  address: string;
+}

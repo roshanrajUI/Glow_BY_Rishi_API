@@ -1,13 +1,14 @@
 import { Service } from "typedi";
 import dbConfig from "../config/db.config";
 import Client from "../models/entities/clients.entity";
+import { ClientCreate } from "../models/interfaces/common-interfaces";
 
 @Service()
 export default class ClientsRepository {
   clientRepository = dbConfig.getRepository(Client);
   constructor() {}
 
-  async createClient(client: Client): Promise<Client> {
+  async createClient(client: ClientCreate): Promise<Client> {
     return this.clientRepository.save(client);
   }
 

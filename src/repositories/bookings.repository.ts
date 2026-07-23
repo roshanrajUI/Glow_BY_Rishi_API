@@ -2,18 +2,87 @@ import { Service } from "typedi";
 import dbConfig from "../config/db.config";
 import Booking from "../models/entities/bookings.entity";
 import {
+  BookedInfo,
   BookingReviews,
   BookingStatus,
+  CreateBooking,
+  CreateBookingService,
 } from "../models/interfaces/booking.interfaces";
 import { ApiError } from "../models/api.erro";
+import { DataSource } from "typeorm";
+import Client from "../models/entities/clients.entity";
+import MyBookingServices from "../models/entities/booking-services.entity";
 
 @Service()
 export class BookingRepository {
-  constructor() {}
+  constructor(private dataSource: DataSource) {}
   bookingRepository = dbConfig.getRepository(Booking);
 
-  async createBooking(booking: Booking): Promise<Booking> {
-    return await this.bookingRepository.save(booking);
+  async createBooking(bookingDetails: CreateBooking): Promise<BookedInfo> {
+    return await this.dataSource.transaction(async (manager) => {
+      const clientRepository = manager.getRepository(Client);
+      const bookingRepository = manager.getRepository(Booking);
+      const bookingServiceRepository = manager.getRepository(MyBookingServices);
+      const {
+        clientName,
+        phoneNumber,
+        location,
+        gmail,
+        bookingDate,
+        bookingTime,
+        bookedServices,
+        description,
+        totalPrice,
+      } = bookingDetails;
+      const clientDetails = {
+        clientName,
+        phoneNumber,
+        address: location,
+        gmail,
+      };
+
+      let isClientExists = await clientRepository.findOne({
+        where: { phoneNumber },
+      });
+
+      if (!isClientExists) {
+        isClientExists = clientRepository.create(clientDetails);
+        isClientExists = await clientRepository.save(isClientExists);
+        if (!isClientExists) {
+          throw new ApiError(409, "Please Check Client Details");
+        }
+      }
+
+      const bookingCount = await bookingRepository.count();
+      const booking = bookingRepository.create({
+        bookingNumber: `GLOW${String(bookingCount + 14).padStart(4, "0")}`,
+        clientId: isClientExists.clientId,
+        bookingDate: this.formatMySQLDateTime(bookingDate),
+        bookingTime: this.formatMySQLDateTime(bookingTime),
+        location: location,
+        notes: description,
+        status: "Pending",
+        totalPrice: totalPrice,
+      });
+
+      const createdBooking = await bookingRepository.save(booking);
+
+      const myServices: CreateBookingService[] = bookedServices.map((ser) => {
+        const booked = bookingServiceRepository.create({
+          ...ser,
+          bookingId: createdBooking.bookingId,
+        });
+        return booked;
+      });
+
+      await bookingServiceRepository.save(myServices);
+      const { bookingNumber } = booking;
+      return {
+        bookingNumber,
+        bookingDate,
+        bookingTime,
+      };
+    });
   }
 
   async getAllBookings(): Promise<Booking[]> {
@@ -118,5 +187,10 @@ export class BookingRepository {
       where: { isActive: true, client: { clientId } },
       relations: { client: true },
     });
+  }
+
+  formatMySQLDateTime(date: string | Date): string {
+    const d = new Date(date);
+    return d.toISOString().slice(0, 19).replace("T", " ");
   }
 }

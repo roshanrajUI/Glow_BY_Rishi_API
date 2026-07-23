@@ -9,7 +9,7 @@ const bookingController = Container.get(BookingsContoller);
 bookingRouter.post("/", async (req, res) => {
   try {
     const booking = await bookingController.createBooking(req.body);
-    res.status(200).send(booking);
+    res.status(200).json(booking);
   } catch (error) {
     console.log("Error Creating Booking", error);
     res.status(500).send({ message: "Internal server error" });
@@ -22,7 +22,7 @@ bookingRouter.get("/", async (req, res) => {
       | BookingStatus
       | undefined;
     const result = await bookingController.getAllBookings(status);
-    res.status(200).send(result);
+    res.status(200).json(result);
   } catch (error) {
     console.log("Error Fetching Booking", error);
     res.status(500).send({ message: "Internal server error" });
@@ -32,7 +32,7 @@ bookingRouter.get("/", async (req, res) => {
 bookingRouter.get("/booking-reviews", async (req, res) => {
   try {
     const result = await bookingController.getBookingReviews();
-    res.status(200).send(result);
+    res.status(200).json(result);
   } catch (error) {
     console.log("Error Fetching Booking Reviews", error);
     res.status(500).send({ message: "Internal server error" });

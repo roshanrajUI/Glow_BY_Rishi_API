@@ -9,7 +9,7 @@ import Booking from "./bookings.entity";
 import MyService from "./my-services.entity";
 
 @Entity("booking_services")
-export default class BookingService {
+export default class MyBookingServices {
   @PrimaryGeneratedColumn("uuid", { name: "booking_service_id" })
   bookingServiceId!: string;
 
@@ -19,17 +19,17 @@ export default class BookingService {
   @Column("uuid", { name: "service_id" })
   serviceId!: string;
 
-  @Column("char", { name: "assigned_user_id", length: 36, nullable: false })
-  assignedUserId!: string;
+  // @Column("char", { name: "assigned_user_id", length: 36, nullable: false })
+  // assignedUserId!: string;
 
   @Column("decimal", {
-    name: "service_price",
+    name: "price",
     precision: 10,
     scale: 2,
     nullable: false,
     default: 0,
   })
-  servicePrice!: number;
+  price!: number;
 
   @Column("boolean", { name: "is_active", default: true })
   isActive!: boolean;

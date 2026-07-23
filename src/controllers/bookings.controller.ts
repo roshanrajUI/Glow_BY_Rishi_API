@@ -2,8 +2,10 @@ import { Body, Get, Post, Query, Route, Tags } from "tsoa";
 import { Service } from "typedi";
 import BookingService from "../services/bookings.services";
 import {
+  BookedInfo,
   BookingReviews,
   BookingStatus,
+  CreateBooking,
 } from "../models/interfaces/booking.interfaces";
 import Booking from "../models/entities/bookings.entity";
 
@@ -14,7 +16,9 @@ export default class BookingsContoller {
   constructor(private readonly bookingService: BookingService) {}
 
   @Post("/create")
-  public async createBooking(@Body() booking: Booking): Promise<Booking> {
+  public async createBooking(
+    @Body() booking: CreateBooking,
+  ): Promise<BookedInfo> {
     return await this.bookingService.createBooking(booking);
   }
 
