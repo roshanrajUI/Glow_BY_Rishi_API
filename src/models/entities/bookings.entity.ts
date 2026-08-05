@@ -24,7 +24,7 @@ export default class Booking {
   @Column("date", { name: "booking_date", nullable: false })
   bookingDate!: string;
 
-  @Column("date", { name: "booking_time", nullable: false })
+  @Column("time", { name: "booking_time", nullable: false })
   bookingTime!: string;
 
   @Column("varchar", { name: "location", length: 255, nullable: true })

@@ -5,6 +5,7 @@ import {
   BookedInfo,
   BookingReviews,
   BookingStatus,
+  ClientBooking,
   CreateBooking,
   CreateBookingService,
 } from "../models/interfaces/booking.interfaces";
@@ -31,7 +32,7 @@ export class BookingRepository {
         bookingDate,
         bookingTime,
         bookedServices,
-        description,
+        notes,
         totalPrice,
       } = bookingDetails;
       const clientDetails = {
@@ -60,7 +61,7 @@ export class BookingRepository {
         bookingDate: this.formatMySQLDateTime(bookingDate),
         bookingTime: this.formatMySQLDateTime(bookingTime),
         location: location,
-        notes: description,
+        notes: notes,
         status: "Pending",
         totalPrice: totalPrice,
       });
@@ -88,14 +89,15 @@ export class BookingRepository {
   async getAllBookings(): Promise<Booking[]> {
     return await this.bookingRepository.find({
       where: { isActive: true },
-      relations: { client: true },
+      relations: { client: true, bookingServices: { service: true } },
     });
   }
 
   async getAllBookingsByStatus(status?: BookingStatus): Promise<Booking[]> {
     return await this.bookingRepository.find({
       where: status ? { isActive: true, status } : { isActive: true },
-      relations: { client: true, bookingServices: true },
+      relations: { client: true, bookingServices: { service: true } },
+      order: { createdAt: "DESC" },
     });
   }
 
@@ -158,13 +160,14 @@ export class BookingRepository {
   async updateBookingStatus(
     bookingId: string,
     status: BookingStatus,
-  ): Promise<Booking | null> {
+  ): Promise<Boolean> {
     const bookingToUpdate = await this.getBookingById(bookingId);
     if (!bookingToUpdate) {
       throw new ApiError(404, "Booking Not Found");
     }
     bookingToUpdate.status = status;
-    return this.bookingRepository.save(bookingToUpdate);
+    const result = await this.bookingRepository.update(bookingId, { status });
+    return result.affected === 1;
   }
 
   async deleteBooking(bookingId: string): Promise<void> {
@@ -187,6 +190,21 @@ export class BookingRepository {
       where: { isActive: true, client: { clientId } },
       relations: { client: true },
     });
+  }
+
+  async getClientBooking(bookingDetails: ClientBooking): Promise<Booking[]> {
+    const { phoneNumber, bookingNumber } = bookingDetails;
+    const bookings = await this.bookingRepository.find({
+      where: bookingNumber
+        ? { client: { phoneNumber }, bookingNumber }
+        : { client: { phoneNumber } },
+      relations: { client: true, bookingServices: { service: true } },
+    });
+
+    if (!(bookings.length > 0)) {
+      throw new ApiError(409, "No Booking Found for Given Phone Number");
+    }
+    return bookings;
   }
 
   formatMySQLDateTime(date: string | Date): string {

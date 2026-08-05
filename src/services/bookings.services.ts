@@ -4,6 +4,7 @@ import {
   BookedInfo,
   BookingReviews,
   BookingStatus,
+  ClientBooking,
   CreateBooking,
 } from "../models/interfaces/booking.interfaces";
 import Booking from "../models/entities/bookings.entity";
@@ -21,7 +22,8 @@ export default class BookingService {
   }
 
   async getAllBookingsByStatus(status?: BookingStatus): Promise<Booking[]> {
-    return await this.bookingRepository.getAllBookingsByStatus(status);
+    const result = await this.bookingRepository.getAllBookingsByStatus(status);
+    return result;
   }
 
   async getBookingReviews(): Promise<BookingReviews[]> {
@@ -39,7 +41,7 @@ export default class BookingService {
   async updateBookingStatus(
     bookingId: string,
     status: BookingStatus,
-  ): Promise<Booking | null> {
+  ): Promise<Boolean> {
     return await this.bookingRepository.updateBookingStatus(bookingId, status);
   }
 
@@ -51,5 +53,9 @@ export default class BookingService {
 
   async getBookingsByClientId(clientId: string): Promise<Booking[]> {
     return await this.bookingRepository.getBookingsByClientId(clientId);
+  }
+
+  async getClientBooking(bookingDetails: ClientBooking): Promise<Booking[]> {
+    return await this.bookingRepository.getClientBooking(bookingDetails);
   }
 }

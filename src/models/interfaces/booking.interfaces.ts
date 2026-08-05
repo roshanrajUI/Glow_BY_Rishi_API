@@ -25,7 +25,7 @@ export interface CreateBooking {
   clientName: string;
   phoneNumber: string;
   gmail: string;
-  description: string;
+  notes: string;
 }
 
 export interface CreateBookingService {
@@ -38,4 +38,9 @@ export interface BookedInfo {
   bookingNumber: string;
   bookingDate: string;
   bookingTime: string;
+}
+
+export interface ClientBooking {
+  phoneNumber: string;
+  bookingNumber?: string;
 }

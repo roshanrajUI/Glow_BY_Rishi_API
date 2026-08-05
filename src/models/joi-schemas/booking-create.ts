@@ -10,7 +10,7 @@ export class BookingCreate {
       clientName: Joi.string().required(),
       phoneNumber: Joi.string().required(),
       gmail: Joi.string().allow(null).allow(""),
-      description: Joi.string().allow(null).allow(""),
+      notes: Joi.string().allow(null).allow(""),
     });
   }
 }

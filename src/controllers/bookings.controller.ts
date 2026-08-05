@@ -5,6 +5,7 @@ import {
   BookedInfo,
   BookingReviews,
   BookingStatus,
+  ClientBooking,
   CreateBooking,
 } from "../models/interfaces/booking.interfaces";
 import Booking from "../models/entities/bookings.entity";
@@ -28,7 +29,7 @@ export default class BookingsContoller {
   }
 
   @Get("/")
-  public async getAllBookings(
+  public async getAllBookingsByStatus(
     @Query() status?: BookingStatus,
   ): Promise<Booking[]> {
     return await this.bookingService.getAllBookingsByStatus(status);
@@ -47,7 +48,7 @@ export default class BookingsContoller {
   @Post("/update-status")
   public async updateBookingStatus(
     @Body() booking: { bookingId: string; status: BookingStatus },
-  ): Promise<Booking | null> {
+  ): Promise<Boolean> {
     return await this.bookingService.updateBookingStatus(
       booking.bookingId,
       booking.status,
@@ -59,6 +60,13 @@ export default class BookingsContoller {
     @Query() clientId: string,
   ): Promise<Booking[]> {
     return await this.bookingService.getBookingsByClientId(clientId);
+  }
+
+  @Post("/client-bookings")
+  public async getClientBooking(
+    @Body() bookingDetails: ClientBooking,
+  ): Promise<Booking[]> {
+    return await this.bookingService.getClientBooking(bookingDetails);
   }
 
   @Get("/client-bookings/:phoneNumber")

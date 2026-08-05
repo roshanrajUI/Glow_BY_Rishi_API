@@ -21,7 +21,7 @@ bookingRouter.get("/", async (req, res) => {
     const status: BookingStatus | undefined = req.query.status as
       | BookingStatus
       | undefined;
-    const result = await bookingController.getAllBookings(status);
+    const result = await bookingController.getAllBookingsByStatus(status);
     res.status(200).json(result);
   } catch (error) {
     console.log("Error Fetching Booking", error);
@@ -98,6 +98,15 @@ bookingRouter.get("/client-bookings/:phoneNumber", async (req, res) => {
   } catch (error) {
     console.log("Error Fetching Client Bookings", error);
     res.status(500).send({ message: "Internal server error" });
+  }
+});
+
+bookingRouter.post("/client-bookings", async (req, res) => {
+  try {
+    const bookings = await bookingController.getClientBooking(req.body);
+    res.status(200).send(bookings);
+  } catch (error) {
+    throw error;
   }
 });
 
