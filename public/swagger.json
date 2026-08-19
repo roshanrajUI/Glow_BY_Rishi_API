@@ -22,6 +22,9 @@
 					"description": {
 						"type": "string"
 					},
+					"categoryId": {
+						"type": "string"
+					},
 					"isActive": {
 						"type": "boolean"
 					},
@@ -32,6 +35,9 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"category": {
+						"$ref": "#/components/schemas/Category"
 					}
 				},
 				"required": [
@@ -40,29 +46,21 @@
 					"price",
 					"isActive",
 					"createdAt",
-					"updatedAt"
+					"updatedAt",
+					"category"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
-			"User": {
+			"Category": {
 				"properties": {
-					"userId": {
+					"categoryId": {
 						"type": "string"
 					},
-					"userName": {
+					"categoryName": {
 						"type": "string"
 					},
-					"email": {
-						"type": "string"
-					},
-					"phoneNumber": {
-						"type": "string"
-					},
-					"password": {
-						"type": "string"
-					},
-					"role": {
+					"description": {
 						"type": "string"
 					},
 					"isActive": {
@@ -75,18 +73,21 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"services": {
+						"items": {
+							"$ref": "#/components/schemas/MyService"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
-					"userId",
-					"userName",
-					"email",
-					"phoneNumber",
-					"password",
-					"role",
+					"categoryId",
+					"categoryName",
 					"isActive",
 					"createdAt",
-					"updatedAt"
+					"updatedAt",
+					"services"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -97,9 +98,6 @@
 						"type": "string"
 					},
 					"serviceId": {
-						"type": "string"
-					},
-					"userId": {
 						"type": "string"
 					},
 					"title": {
@@ -128,23 +126,18 @@
 					},
 					"service": {
 						"$ref": "#/components/schemas/MyService"
-					},
-					"user": {
-						"$ref": "#/components/schemas/User"
 					}
 				},
 				"required": [
 					"workId",
 					"serviceId",
-					"userId",
 					"title",
 					"imageUrl",
 					"workDate",
 					"isActive",
 					"createdAt",
 					"updatedAt",
-					"service",
-					"user"
+					"service"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -184,6 +177,9 @@
 					"serviceId": {
 						"type": "string"
 					},
+					"categoryId": {
+						"type": "string"
+					},
 					"pageSize": {
 						"type": "number",
 						"format": "double"
@@ -194,9 +190,504 @@
 					}
 				},
 				"required": [
-					"serviceId",
 					"pageSize",
 					"pageNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Boolean": {
+				"properties": {},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"MyWorkCreate": {
+				"properties": {
+					"serviceId": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"imageUrl": {
+						"type": "string"
+					},
+					"userId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"serviceId",
+					"title",
+					"description",
+					"imageUrl"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ServiceCreate": {
+				"properties": {
+					"serviceId": {
+						"type": "string"
+					},
+					"categoryId": {
+						"type": "string"
+					},
+					"serviceName": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"isActive": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"categoryId",
+					"serviceName",
+					"price",
+					"description",
+					"isActive"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Client": {
+				"properties": {
+					"clientId": {
+						"type": "string"
+					},
+					"clientName": {
+						"type": "string"
+					},
+					"phoneNumber": {
+						"type": "string"
+					},
+					"gmail": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"clientId",
+					"clientName",
+					"phoneNumber",
+					"gmail",
+					"isActive",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ClientCreate": {
+				"properties": {
+					"clientName": {
+						"type": "string"
+					},
+					"phoneNumber": {
+						"type": "string"
+					},
+					"gmail": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"clientName",
+					"phoneNumber",
+					"address"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_Client_": {
+				"properties": {
+					"clientId": {
+						"type": "string"
+					},
+					"clientName": {
+						"type": "string"
+					},
+					"phoneNumber": {
+						"type": "string"
+					},
+					"gmail": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"CategoryCreate": {
+				"properties": {
+					"categoryId": {
+						"type": "string"
+					},
+					"categoryName": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"isActive": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"categoryName",
+					"description"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BookedInfo": {
+				"properties": {
+					"bookingNumber": {
+						"type": "string"
+					},
+					"bookingDate": {
+						"type": "string"
+					},
+					"bookingTime": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"bookingNumber",
+					"bookingDate",
+					"bookingTime"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateBookingService": {
+				"properties": {
+					"bookingId": {
+						"type": "string"
+					},
+					"serviceId": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"serviceId",
+					"price"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateBooking": {
+				"properties": {
+					"bookedServices": {
+						"items": {
+							"$ref": "#/components/schemas/CreateBookingService"
+						},
+						"type": "array"
+					},
+					"bookingDate": {
+						"type": "string"
+					},
+					"bookingTime": {
+						"type": "string"
+					},
+					"location": {
+						"type": "string"
+					},
+					"totalPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"clientName": {
+						"type": "string"
+					},
+					"phoneNumber": {
+						"type": "string"
+					},
+					"gmail": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"bookedServices",
+					"bookingDate",
+					"bookingTime",
+					"location",
+					"totalPrice",
+					"clientName",
+					"phoneNumber",
+					"gmail",
+					"notes"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BookingStatus": {
+				"type": "string",
+				"enum": [
+					"OTP Pending",
+					"Pending",
+					"Confirmed",
+					"Completed",
+					"Cancelled"
+				]
+			},
+			"BookingReviews": {
+				"properties": {
+					"bookingId": {
+						"type": "string"
+					},
+					"clientId": {
+						"type": "string"
+					},
+					"bookingDate": {
+						"type": "string"
+					},
+					"location": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/BookingStatus"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"reviewRating": {
+						"type": "number",
+						"format": "double"
+					},
+					"reviewText": {
+						"type": "string"
+					},
+					"reviewDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"client": {
+						"$ref": "#/components/schemas/Client"
+					}
+				},
+				"required": [
+					"bookingId",
+					"clientId",
+					"bookingDate",
+					"location",
+					"status",
+					"isActive",
+					"client"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Booking": {
+				"properties": {
+					"bookingId": {
+						"type": "string"
+					},
+					"bookingNumber": {
+						"type": "string"
+					},
+					"clientId": {
+						"type": "string"
+					},
+					"bookingDate": {
+						"type": "string"
+					},
+					"bookingTime": {
+						"type": "string"
+					},
+					"location": {
+						"type": "string"
+					},
+					"totalPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"status": {
+						"$ref": "#/components/schemas/BookingStatus"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"reviewRating": {
+						"type": "number",
+						"format": "double"
+					},
+					"reviewText": {
+						"type": "string"
+					},
+					"reviewDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"isOtpVerified": {
+						"type": "boolean"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"client": {
+						"$ref": "#/components/schemas/Client"
+					},
+					"bookingServices": {
+						"items": {
+							"$ref": "#/components/schemas/MyBookingServices"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"bookingId",
+					"bookingNumber",
+					"clientId",
+					"bookingDate",
+					"bookingTime",
+					"location",
+					"totalPrice",
+					"status",
+					"isOtpVerified",
+					"isActive",
+					"createdAt",
+					"updatedAt",
+					"client",
+					"bookingServices"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"MyBookingServices": {
+				"properties": {
+					"bookingServiceId": {
+						"type": "string"
+					},
+					"bookingId": {
+						"type": "string"
+					},
+					"serviceId": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"booking": {
+						"$ref": "#/components/schemas/Booking"
+					},
+					"service": {
+						"$ref": "#/components/schemas/MyService"
+					}
+				},
+				"required": [
+					"bookingServiceId",
+					"bookingId",
+					"serviceId",
+					"price",
+					"isActive",
+					"createdAt",
+					"updatedAt",
+					"booking",
+					"service"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ClientBooking": {
+				"properties": {
+					"phoneNumber": {
+						"type": "string"
+					},
+					"bookingNumber": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"phoneNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"VerifyBooking": {
+				"properties": {
+					"bookingNumber": {
+						"type": "string"
+					},
+					"gmail": {
+						"type": "string"
+					},
+					"otp": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"bookingNumber",
+					"gmail",
+					"otp"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -220,7 +711,7 @@
 		"contact": {}
 	},
 	"paths": {
-		"/api/my-works": {
+		"/api/my-works/all": {
 			"post": {
 				"operationId": "GetMyWorks",
 				"responses": {
@@ -252,6 +743,108 @@
 				}
 			}
 		},
+		"/api/my-works": {
+			"post": {
+				"operationId": "CreateMyWork",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"My Works"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/MyWorkCreate"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/my-works/{myWorkId}": {
+			"put": {
+				"operationId": "UpdatemyWork",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"My Works"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "myWorkId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/MyWorkCreate"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteMyWork",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"My Works"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "myWorkId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/api/services/all": {
 			"get": {
 				"operationId": "GetAllServices",
@@ -275,6 +868,768 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/api/services/services-by-category/{categoryId}": {
+			"get": {
+				"operationId": "GetServicesByCategory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/MyService"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"My Services"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "categoryId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/services": {
+			"post": {
+				"operationId": "CreateService",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"My Services"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ServiceCreate"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/services/{serviceId}": {
+			"put": {
+				"operationId": "UpdateService",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"My Services"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "serviceId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ServiceCreate"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteService",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"My Services"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "serviceId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/clients": {
+			"post": {
+				"operationId": "CreateClient",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Client"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Clients"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ClientCreate"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetAllClients",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Client"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Clients"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/api/clients/{phoneNumber}": {
+			"get": {
+				"operationId": "GetClientByNumber",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Client"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Clients"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "phoneNumber",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/clients/delete/{phoneNumber}": {
+			"post": {
+				"operationId": "DeleteClientByNumber",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Clients"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "phoneNumber",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/clients/update/{phoneNumber}": {
+			"post": {
+				"operationId": "UpdateClientByNumber",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Client"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Clients"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "phoneNumber",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_Client_"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/categories/{categoryId}": {
+			"put": {
+				"operationId": "UpdateCategory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Categories"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "categoryId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CategoryCreate"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteCategory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Categories"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "categoryId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/categories": {
+			"post": {
+				"operationId": "CreateCategory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Category"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Categories"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CategoryCreate"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/categories/all": {
+			"get": {
+				"operationId": "GetAllCategories",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Category"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Categories"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/api/bookings/create": {
+			"post": {
+				"operationId": "CreateBooking",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BookedInfo"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Bookings"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateBooking"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bookings/booking-reviews": {
+			"get": {
+				"operationId": "GetBookingReviews",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/BookingReviews"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Bookings"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/api/bookings": {
+			"get": {
+				"operationId": "GetAllBookingsByStatus",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Booking"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Bookings"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "status",
+						"required": false,
+						"schema": {
+							"$ref": "#/components/schemas/BookingStatus"
+						}
+					}
+				]
+			}
+		},
+		"/api/bookings/{bookingId}": {
+			"get": {
+				"operationId": "GetBookingById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Booking"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Bookings"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "bookingId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/bookings/update": {
+			"post": {
+				"operationId": "UpdateBooking",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Booking"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Bookings"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Booking"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bookings/update-status": {
+			"post": {
+				"operationId": "UpdateBookingStatus",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Bookings"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"status": {
+										"$ref": "#/components/schemas/BookingStatus"
+									},
+									"bookingId": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"status",
+									"bookingId"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bookings/client-bookings/{clientId}": {
+			"get": {
+				"operationId": "GetBookingsByClientId",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Booking"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Bookings"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "clientId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/bookings/client-bookings": {
+			"post": {
+				"operationId": "GetClientBooking",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Booking"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Bookings"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ClientBooking"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bookings/client-bookings/{phoneNumber}": {
+			"get": {
+				"operationId": "GetBookingsByClientPhoneNumber",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Booking"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Bookings"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "phoneNumber",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/bookings/verify-booking": {
+			"post": {
+				"operationId": "VerifyBooking",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Bookings"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/VerifyBooking"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/api/auth/register": {

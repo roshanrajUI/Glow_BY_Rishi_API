@@ -110,4 +110,15 @@ bookingRouter.post("/client-bookings", async (req, res) => {
   }
 });
 
+bookingRouter.post("/verify-booking", async (req, res) => {
+  try {
+    const isVerified = await bookingController.verifyBooking(req.body);
+    if (isVerified) {
+      res.status(200).send(isVerified);
+    }
+  } catch (error) {
+    throw error;
+  }
+});
+
 export default bookingRouter;

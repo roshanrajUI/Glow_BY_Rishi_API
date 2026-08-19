@@ -4,6 +4,7 @@ import Booking from "../models/entities/bookings.entity";
 import {
   BookedInfo,
   BookingReviews,
+  BOOKINGSTATUS,
   BookingStatus,
   ClientBooking,
   CreateBooking,
@@ -13,10 +14,16 @@ import { ApiError } from "../models/api.erro";
 import { DataSource } from "typeorm";
 import Client from "../models/entities/clients.entity";
 import MyBookingServices from "../models/entities/booking-services.entity";
+import { MailService } from "../services/mail.service";
+import { OtpRepository } from "./otp.repository";
 
 @Service()
 export class BookingRepository {
-  constructor(private dataSource: DataSource) {}
+  constructor(
+    private dataSource: DataSource,
+    private mailService: MailService,
+    private otpRepository: OtpRepository,
+  ) {}
   bookingRepository = dbConfig.getRepository(Booking);
 
   async createBooking(bookingDetails: CreateBooking): Promise<BookedInfo> {
@@ -62,7 +69,7 @@ export class BookingRepository {
         bookingTime: this.formatMySQLDateTime(bookingTime),
         location: location,
         notes: notes,
-        status: "Pending",
+        status: BOOKINGSTATUS.OTPPENDING,
         totalPrice: totalPrice,
       });
 
@@ -78,6 +85,15 @@ export class BookingRepository {
 
       await bookingServiceRepository.save(myServices);
       const { bookingNumber } = booking;
+      const bookingOtp = await this.otpRepository.createOtp(
+        createdBooking.bookingNumber,
+        gmail,
+      );
+      await this.mailService.verifyBookingMail({
+        gmail: bookingDetails.gmail,
+        bookingNumber: createdBooking.bookingNumber,
+        otp: bookingOtp,
+      });
       return {
         bookingNumber,
         bookingDate,
@@ -88,7 +104,7 @@ export class BookingRepository {
 
   async getAllBookings(): Promise<Booking[]> {
     return await this.bookingRepository.find({
-      where: { isActive: true },
+      where: { isActive: true, isOtpVerified: true },
       relations: { client: true, bookingServices: { service: true } },
     });
   }
@@ -147,7 +163,17 @@ export class BookingRepository {
 
   async getBookingById(bookingId: string): Promise<Booking | null> {
     const selectedBooking = await this.bookingRepository.findOne({
-      where: { bookingId, isActive: true },
+      where: { bookingId, isActive: true, isOtpVerified: true },
+      relations: { client: true },
+    });
+    return selectedBooking;
+  }
+
+  async getBookingByBookingNumber(
+    bookingNumber: string,
+  ): Promise<Booking | null> {
+    const selectedBooking = await this.bookingRepository.findOne({
+      where: { bookingNumber, isActive: true },
       relations: { client: true },
     });
     return selectedBooking;

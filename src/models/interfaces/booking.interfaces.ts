@@ -1,13 +1,26 @@
 import Client from "../entities/clients.entity";
 
-export type BookingStatus = "Pending" | "Confirmed" | "Completed" | "Cancelled";
+export type BookingStatus =
+  | "OTP Pending"
+  | "Pending"
+  | "Confirmed"
+  | "Completed"
+  | "Cancelled";
+
+export enum BOOKINGSTATUS {
+  OTPPENDING = "OTP Pending",
+  PENDING = "Pending",
+  CONFIRMED = "Confirmed",
+  COMPLETED = "Completed",
+  CANCELLED = "Cancelled",
+}
 
 export interface BookingReviews {
   bookingId: string;
   clientId: string;
   bookingDate: string;
   location: string;
-  status: "Pending" | "Confirmed" | "Completed" | "Cancelled";
+  status: BookingStatus;
   notes?: string;
   reviewRating?: number;
   reviewText?: string;
@@ -43,4 +56,10 @@ export interface BookedInfo {
 export interface ClientBooking {
   phoneNumber: string;
   bookingNumber?: string;
+}
+
+export interface VerifyBooking {
+  bookingNumber: string;
+  gmail: string;
+  otp: string;
 }

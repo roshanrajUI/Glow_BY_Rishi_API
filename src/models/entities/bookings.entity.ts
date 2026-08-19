@@ -41,8 +41,8 @@ export default class Booking {
 
   @Column("enum", {
     name: "status",
-    enum: ["Pending", "Confirmed", "Completed", "Cancelled"],
-    default: "Pending",
+    enum: ["OTP Pending", "Pending", "Confirmed", "Completed", "Cancelled"],
+    default: "OTP Pending",
   })
   status!: BookingStatus;
 
@@ -62,6 +62,9 @@ export default class Booking {
 
   @Column("datetime", { name: "review_date", nullable: true })
   reviewDate?: Date;
+
+  @Column("boolean", { name: "is_otp_verified", default: false })
+  isOtpVerified!: boolean;
 
   @Column("boolean", { name: "is_active", default: true })
   isActive!: boolean;

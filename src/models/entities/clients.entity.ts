@@ -17,12 +17,12 @@ export default class Client {
   phoneNumber!: string;
 
   @Column("varchar", {
-    name: "email",
+    name: "gmail",
     length: 255,
     nullable: false,
     unique: true,
   })
-  email!: string;
+  gmail!: string;
 
   @Column("text", { name: "address", nullable: true })
   address?: string;

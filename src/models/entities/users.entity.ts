@@ -9,12 +9,12 @@ export default class User {
   userName!: string;
 
   @Column("varchar", {
-    name: "email",
+    name: "gmail",
     length: 255,
     nullable: false,
     unique: true,
   })
-  email!: string;
+  gmail!: string;
 
   @Column("varchar", {
     name: "phone_number",

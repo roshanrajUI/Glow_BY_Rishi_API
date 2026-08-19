@@ -8,6 +8,7 @@ import UserService from "../models/entities/user-services.entity";
 import MyService from "../models/entities/my-services.entity";
 import Category from "../models/entities/service-category.entity";
 import MyBookingServices from "../models/entities/booking-services.entity";
+import { Otp } from "../models/entities/otp";
 
 const dbConfig: DataSource = new DataSource({
   type: "mysql",
@@ -27,6 +28,7 @@ const dbConfig: DataSource = new DataSource({
     MyBookingServices,
     UserService,
     Client,
+    Otp,
   ],
 });
 

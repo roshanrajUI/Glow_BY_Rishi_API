@@ -3,15 +3,24 @@ import { BookingRepository } from "../repositories/bookings.repository";
 import {
   BookedInfo,
   BookingReviews,
+  BOOKINGSTATUS,
   BookingStatus,
   ClientBooking,
   CreateBooking,
+  VerifyBooking,
 } from "../models/interfaces/booking.interfaces";
 import Booking from "../models/entities/bookings.entity";
+import { OtpRepository } from "../repositories/otp.repository";
+import { ApiError } from "../models/api.erro";
+import { MailService } from "./mail.service";
 
 @Service()
 export default class BookingService {
-  constructor(private readonly bookingRepository: BookingRepository) {}
+  constructor(
+    private readonly bookingRepository: BookingRepository,
+    private optRepository: OtpRepository,
+    private mailService: MailService,
+  ) {}
 
   async createBooking(booking: CreateBooking): Promise<BookedInfo> {
     return await this.bookingRepository.createBooking(booking);
@@ -57,5 +66,34 @@ export default class BookingService {
 
   async getClientBooking(bookingDetails: ClientBooking): Promise<Booking[]> {
     return await this.bookingRepository.getClientBooking(bookingDetails);
+  }
+
+  async verifyBooking(bookingDetails: VerifyBooking): Promise<Boolean> {
+    const booking = await this.bookingRepository.getBookingByBookingNumber(
+      bookingDetails.bookingNumber,
+    );
+    if (!booking) {
+      throw new ApiError(404, "Booking Not Found");
+    }
+
+    if (booking.status !== BOOKINGSTATUS.OTPPENDING) {
+      throw new ApiError(404, "OTP already verified please check status");
+    }
+
+    const isOtpVerified = await this.optRepository.verifyOtp(bookingDetails);
+    if (!isOtpVerified) {
+      throw new ApiError(404, "OTP Invalid Please try again");
+    }
+    booking.isOtpVerified = true;
+    booking.status = "Pending";
+    const isBookingDone = await this.updateBooking(booking);
+    if (booking.isOtpVerified) {
+      this.mailService.bookingSuccessMail(
+        isBookingDone.client.clientName,
+        bookingDetails.gmail,
+        bookingDetails.bookingNumber,
+      );
+    }
+    return isBookingDone.isOtpVerified;
   }
 }

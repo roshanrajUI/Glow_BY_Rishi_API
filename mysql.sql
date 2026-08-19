@@ -5,7 +5,7 @@ USE glow_by_rishi;
 CREATE TABLE users (
     user_id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     user_name VARCHAR(50) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
+    gmail VARCHAR(255) UNIQUE NOT NULL,
     phone_number VARCHAR(10) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     role ENUM('Admin', 'Beautician') DEFAULT 'Beautician',
@@ -56,7 +56,7 @@ CREATE TABLE clients (
     client_id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     client_name VARCHAR(50) NOT NULL,
     phone_number VARCHAR(10) NOT NULL,
-    email VARCHAR(255),
+    gmail VARCHAR(255),
     address TEXT,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -72,8 +72,9 @@ CREATE TABLE bookings (
     booking_time DATETIME NOT NULL,
     location VARCHAR(255),
     total_price DECIMAL(10,2) DEFAULT 0,
-    status ENUM('Pending', 'Confirmed', 'Completed', 'Cancelled') DEFAULT 'Pending',
+    status ENUM('OTP Pending', 'Pending', 'Confirmed', 'Completed', 'Cancelled') DEFAULT 'OTP Pending',
     notes TEXT,
+    isOtpVerified BOOLEAN DEFAULT FALSE,
     review_rating TINYINT,
     review_text TEXT,
     review_date DATETIME,
@@ -115,4 +116,14 @@ CREATE TABLE work_portfolio (
 
     FOREIGN KEY (service_id) REFERENCES services(service_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- otp
+create table otp(
+    otp_id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    booking_number CHAR(8) UNIQUE NOT NULL,
+    gmail VARCHAR(255),
+    otp_hash varchar(255),
+    expires_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

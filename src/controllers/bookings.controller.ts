@@ -7,6 +7,7 @@ import {
   BookingStatus,
   ClientBooking,
   CreateBooking,
+  VerifyBooking,
 } from "../models/interfaces/booking.interfaces";
 import Booking from "../models/entities/bookings.entity";
 
@@ -76,5 +77,12 @@ export default class BookingsContoller {
     return await this.bookingService.getBookingsByClientPhoneNumber(
       phoneNumber,
     );
+  }
+
+  @Post("/verify-booking")
+  public async verifyBooking(
+    @Body() bookingDetails: VerifyBooking,
+  ): Promise<Boolean> {
+    return await this.bookingService.verifyBooking(bookingDetails);
   }
 }
