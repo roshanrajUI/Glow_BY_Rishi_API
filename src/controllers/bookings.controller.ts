@@ -7,6 +7,8 @@ import {
   BookingStatus,
   ClientBooking,
   CreateBooking,
+  CreateBookingReview,
+  ResendOtp,
   VerifyBooking,
 } from "../models/interfaces/booking.interfaces";
 import Booking from "../models/entities/bookings.entity";
@@ -18,9 +20,7 @@ export default class BookingsContoller {
   constructor(private readonly bookingService: BookingService) {}
 
   @Post("/create")
-  public async createBooking(
-    @Body() booking: CreateBooking,
-  ): Promise<BookedInfo> {
+  public async createBooking(@Body() booking: CreateBooking): Promise<Booking> {
     return await this.bookingService.createBooking(booking);
   }
 
@@ -39,6 +39,15 @@ export default class BookingsContoller {
   @Get("/{bookingId}")
   public async getBookingById(bookingId: string): Promise<Booking | null> {
     return await this.bookingService.getBookingById(bookingId);
+  }
+
+  @Post("/create-review")
+  public async createBookingReview(
+    @Body()
+    review: CreateBookingReview,
+  ): Promise<Boolean> {
+    console.log("review details in controller", review);
+    return await this.bookingService.createBookingReview(review);
   }
 
   @Post("/update")
@@ -84,5 +93,10 @@ export default class BookingsContoller {
     @Body() bookingDetails: VerifyBooking,
   ): Promise<Boolean> {
     return await this.bookingService.verifyBooking(bookingDetails);
+  }
+
+  @Post("/resend-otp")
+  public async resendOtp(@Body() bookingDetails: ResendOtp): Promise<Boolean> {
+    return this.bookingService.resendOtp(bookingDetails);
   }
 }

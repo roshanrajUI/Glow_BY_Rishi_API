@@ -63,3 +63,15 @@ export interface VerifyBooking {
   gmail: string;
   otp: string;
 }
+
+export interface ResendOtp {
+  bookingNumber: string;
+  gmail: string;
+}
+
+export interface CreateBookingReview {
+  bookingNumber: string;
+  clientNumber: string;
+  rating: number;
+  review: string | undefined;
+}

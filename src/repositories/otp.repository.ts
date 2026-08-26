@@ -2,7 +2,10 @@ import { DataSource } from "typeorm";
 import dbConfig from "../config/db.config";
 import { Otp } from "../models/entities/otp";
 import { ApiError } from "../models/api.erro";
-import { VerifyBooking } from "../models/interfaces/booking.interfaces";
+import {
+  ResendOtp,
+  VerifyBooking,
+} from "../models/interfaces/booking.interfaces";
 import { Service } from "typedi";
 
 @Service()
@@ -41,5 +44,26 @@ export class OtpRepository {
       throw new ApiError(404, "OTP Expired Please try again");
     }
     return otpRecord.otpHash === bookingDetails.otp;
+  }
+
+  async resendOtp(bookingDetails: ResendOtp): Promise<Boolean> {
+    const { bookingNumber, gmail } = bookingDetails;
+    const existingOtp = await this.otpRepository.findOne({
+      where: {
+        bookingNumber,
+        gmail,
+      },
+    });
+
+    if (!existingOtp) {
+      throw new ApiError(409, "Booking Not Found or Booking Already Verified");
+    }
+
+    const otp = {
+      otpHash: this.otpGeneration(),
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+    };
+    const result = await this.otpRepository.update(existingOtp.id, otp);
+    return result.affected === 1;
   }
 }

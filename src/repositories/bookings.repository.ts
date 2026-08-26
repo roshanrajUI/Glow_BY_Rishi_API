@@ -8,6 +8,7 @@ import {
   BookingStatus,
   ClientBooking,
   CreateBooking,
+  CreateBookingReview,
   CreateBookingService,
 } from "../models/interfaces/booking.interfaces";
 import { ApiError } from "../models/api.erro";
@@ -26,8 +27,8 @@ export class BookingRepository {
   ) {}
   bookingRepository = dbConfig.getRepository(Booking);
 
-  async createBooking(bookingDetails: CreateBooking): Promise<BookedInfo> {
-    return await this.dataSource.transaction(async (manager) => {
+  async createBooking(bookingDetails: CreateBooking): Promise<Booking> {
+    const bk = await this.dataSource.transaction(async (manager) => {
       const clientRepository = manager.getRepository(Client);
       const bookingRepository = manager.getRepository(Booking);
       const bookingServiceRepository = manager.getRepository(MyBookingServices);
@@ -54,8 +55,7 @@ export class BookingRepository {
       });
 
       if (!isClientExists) {
-        isClientExists = clientRepository.create(clientDetails);
-        isClientExists = await clientRepository.save(isClientExists);
+        isClientExists = await clientRepository.save(clientDetails);
         if (!isClientExists) {
           throw new ApiError(409, "Please Check Client Details");
         }
@@ -82,24 +82,20 @@ export class BookingRepository {
         });
         return booked;
       });
-
       await bookingServiceRepository.save(myServices);
-      const { bookingNumber } = booking;
-      const bookingOtp = await this.otpRepository.createOtp(
-        createdBooking.bookingNumber,
-        gmail,
-      );
-      await this.mailService.verifyBookingMail({
-        gmail: bookingDetails.gmail,
-        bookingNumber: createdBooking.bookingNumber,
-        otp: bookingOtp,
-      });
-      return {
-        bookingNumber,
-        bookingDate,
-        bookingTime,
-      };
+      return createdBooking;
     });
+
+    const bookingOtp = await this.otpRepository.createOtp(
+      bk.bookingNumber,
+      bookingDetails.gmail,
+    );
+    await this.mailService.verifyBookingMail({
+      gmail: bookingDetails.gmail,
+      bookingNumber: bk.bookingNumber,
+      otp: bookingOtp,
+    });
+    return bk;
   }
 
   async getAllBookings(): Promise<Booking[]> {
@@ -179,6 +175,28 @@ export class BookingRepository {
     return selectedBooking;
   }
 
+  async createBookingReview(
+    reviewDetails: CreateBookingReview,
+  ): Promise<Boolean> {
+    const { bookingNumber, clientNumber, rating, review } = reviewDetails;
+    const bookingToUpdate = await this.getBookingByBookingNumber(bookingNumber);
+    if (!bookingToUpdate) {
+      throw new ApiError(404, "Booking Not Found");
+    }
+    if (bookingToUpdate.client.phoneNumber !== clientNumber) {
+      throw new ApiError(403, "Client Number does not match the booking");
+    }
+    const updatedBooking = await this.bookingRepository.update(
+      bookingToUpdate.bookingId,
+      {
+        reviewRating: rating,
+        reviewText: review,
+        reviewDate: new Date(),
+      },
+    );
+    return updatedBooking.affected === 1;
+  }
+
   async updateBooking(booking: Booking): Promise<Booking> {
     return this.bookingRepository.save(booking);
   }
@@ -228,7 +246,7 @@ export class BookingRepository {
     });
 
     if (!(bookings.length > 0)) {
-      throw new ApiError(409, "No Booking Found for Given Phone Number");
+      throw new ApiError(409, "No Booking Found for Given Details");
     }
     return bookings;
   }

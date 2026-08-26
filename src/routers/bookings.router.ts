@@ -2,11 +2,13 @@ import { Router } from "express";
 import Container from "typedi";
 import BookingsContoller from "../controllers/bookings.controller";
 import { BookingStatus } from "../models/interfaces/booking.interfaces";
+import { Validation } from "../middlewares/validation";
+import { CreateReview } from "../models/joi-schemas/review-create";
 
 const bookingRouter = Router();
 const bookingController = Container.get(BookingsContoller);
 
-bookingRouter.post("/", async (req, res) => {
+bookingRouter.post("/create", async (req, res) => {
   try {
     const booking = await bookingController.createBooking(req.body);
     res.status(200).json(booking);
@@ -64,6 +66,20 @@ bookingRouter.post("/update", async (req, res) => {
   }
 });
 
+bookingRouter.post(
+  "/create-review",
+  Validation.run(CreateReview.setUp(), "body"),
+  async (req, res) => {
+    try {
+      const result = await bookingController.createBookingReview(req.body);
+      res.status(200).send(result);
+    } catch (error) {
+      console.log("Error Creating Booking Review", error);
+      res.status(500).send({ message: "Internal server error" });
+    }
+  },
+);
+
 bookingRouter.post("/update-status", async (req, res, next) => {
   try {
     const result = await bookingController.updateBookingStatus(req.body);
@@ -115,6 +131,17 @@ bookingRouter.post("/verify-booking", async (req, res) => {
     const isVerified = await bookingController.verifyBooking(req.body);
     if (isVerified) {
       res.status(200).send(isVerified);
+    }
+  } catch (error) {
+    throw error;
+  }
+});
+
+bookingRouter.post("/resend-otp", async (req, res) => {
+  try {
+    const resend = await bookingController.resendOtp(req.body);
+    if (resend) {
+      res.status(200).send(resend);
     }
   } catch (error) {
     throw error;

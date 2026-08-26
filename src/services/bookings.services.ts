@@ -1,12 +1,13 @@
 import { Service } from "typedi";
 import { BookingRepository } from "../repositories/bookings.repository";
 import {
-  BookedInfo,
   BookingReviews,
   BOOKINGSTATUS,
   BookingStatus,
   ClientBooking,
   CreateBooking,
+  CreateBookingReview,
+  ResendOtp,
   VerifyBooking,
 } from "../models/interfaces/booking.interfaces";
 import Booking from "../models/entities/bookings.entity";
@@ -22,7 +23,7 @@ export default class BookingService {
     private mailService: MailService,
   ) {}
 
-  async createBooking(booking: CreateBooking): Promise<BookedInfo> {
+  async createBooking(booking: CreateBooking): Promise<Booking> {
     return await this.bookingRepository.createBooking(booking);
   }
 
@@ -41,6 +42,12 @@ export default class BookingService {
 
   async getBookingById(bookingId: string): Promise<Booking | null> {
     return await this.bookingRepository.getBookingById(bookingId);
+  }
+
+  async createBookingReview(
+    reviewDetails: CreateBookingReview,
+  ): Promise<Boolean> {
+    return await this.bookingRepository.createBookingReview(reviewDetails);
   }
 
   async updateBooking(booking: Booking): Promise<Booking> {
@@ -95,5 +102,9 @@ export default class BookingService {
       );
     }
     return isBookingDone.isOtpVerified;
+  }
+
+  async resendOtp(bookingDetails: ResendOtp): Promise<Boolean> {
+    return await this.optRepository.resendOtp(bookingDetails);
   }
 }
