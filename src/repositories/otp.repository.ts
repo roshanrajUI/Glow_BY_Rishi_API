@@ -1,7 +1,7 @@
 import { DataSource } from "typeorm";
 import dbConfig from "../config/db.config";
 import { Otp } from "../models/entities/otp";
-import { ApiError } from "../models/api.erro";
+import { ApiError } from "../models/api.error";
 import {
   ResendOtp,
   VerifyBooking,

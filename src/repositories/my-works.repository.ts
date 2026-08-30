@@ -6,7 +6,7 @@ import {
   PaginationWithData,
 } from "../models/interfaces/common-interfaces";
 import { MyWorkRequest } from "../models/interfaces/my-work.interfaces";
-import { ApiError } from "../models/api.erro";
+import { ApiError } from "../models/api.error";
 
 @Service()
 export class MyWorkRepository {

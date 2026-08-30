@@ -2,7 +2,7 @@ import { Service } from "typedi";
 import dbConfig from "../config/db.config";
 import Category from "../models/entities/service-category.entity";
 import { CategoryCreate } from "../models/interfaces/common-interfaces";
-import { ApiError } from "../models/api.erro";
+import { ApiError } from "../models/api.error";
 
 @Service()
 export default class CategoryRepo {

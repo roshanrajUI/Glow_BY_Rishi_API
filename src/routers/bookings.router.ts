@@ -89,8 +89,7 @@ bookingRouter.post("/update-status", async (req, res, next) => {
       res.status(404).send({ message: "Booking not found" });
     }
   } catch (error) {
-    console.error("Error Updating Booking Status", error);
-    next(error);
+    throw error;
   }
 });
 

@@ -12,7 +12,7 @@ import {
 } from "../models/interfaces/booking.interfaces";
 import Booking from "../models/entities/bookings.entity";
 import { OtpRepository } from "../repositories/otp.repository";
-import { ApiError } from "../models/api.erro";
+import { ApiError } from "../models/api.error";
 import { MailService } from "./mail.service";
 
 @Service()

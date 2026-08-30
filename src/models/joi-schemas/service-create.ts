@@ -7,6 +7,7 @@ export class CreateService {
       serviceName: Joi.string().required(),
       price: Joi.number().min(1).required(),
       description: Joi.string().allow(null).allow(""),
+      image: Joi.string().required(),
     });
   }
 }

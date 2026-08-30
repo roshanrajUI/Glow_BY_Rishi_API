@@ -30,6 +30,9 @@ export default class MyService {
   @Column("varchar", { name: "category_id", nullable: false })
   categoryId?: string;
 
+  @Column("varchar", { name: "image_url", nullable: false })
+  imageUrl?: string;
+
   @Column("boolean", { name: "is_active", default: true })
   isActive!: boolean;
 

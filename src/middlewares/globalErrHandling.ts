@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ApiError } from "../models/api.erro";
+import { ApiError } from "../models/api.error";
 
 export class GlobalErrorHandling {
   public static setUp() {

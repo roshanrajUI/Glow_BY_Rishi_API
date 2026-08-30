@@ -11,7 +11,7 @@ import {
   CreateBookingReview,
   CreateBookingService,
 } from "../models/interfaces/booking.interfaces";
-import { ApiError } from "../models/api.erro";
+import { ApiError } from "../models/api.error";
 import { DataSource } from "typeorm";
 import Client from "../models/entities/clients.entity";
 import MyBookingServices from "../models/entities/booking-services.entity";
@@ -159,7 +159,7 @@ export class BookingRepository {
 
   async getBookingById(bookingId: string): Promise<Booking | null> {
     const selectedBooking = await this.bookingRepository.findOne({
-      where: { bookingId, isActive: true, isOtpVerified: true },
+      where: { bookingId, isActive: true },
       relations: { client: true },
     });
     return selectedBooking;
@@ -209,6 +209,18 @@ export class BookingRepository {
     if (!bookingToUpdate) {
       throw new ApiError(404, "Booking Not Found");
     }
+    if (bookingToUpdate.status === BOOKINGSTATUS.OTPPENDING) {
+      throw new ApiError(409, "Please Verify the OTP");
+    }
+
+    if (bookingToUpdate.status === BOOKINGSTATUS.COMPLETED) {
+      throw new ApiError(409, "Booking Already Completed");
+    }
+
+    if (bookingToUpdate.status === BOOKINGSTATUS.CANCELLED) {
+      throw new ApiError(409, "Booking Already Cancelled");
+    }
+
     bookingToUpdate.status = status;
     const result = await this.bookingRepository.update(bookingId, { status });
     return result.affected === 1;
