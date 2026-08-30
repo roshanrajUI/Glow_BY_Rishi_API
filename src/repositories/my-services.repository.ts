@@ -2,7 +2,7 @@ import { Service } from "typedi";
 import dbConfig from "../config/db.config";
 import MyService from "../models/entities/my-services.entity";
 import { ServiceCreate } from "../models/interfaces/common-interfaces";
-import { ApiError } from "../models/api.erro";
+import { ApiError } from "../models/api.error";
 
 @Service()
 export default class ServicesRepository {
@@ -18,7 +18,20 @@ export default class ServicesRepository {
       );
     }
 
-    const created = this.serviceRepo.save(service);
+    if (!service.imageUrl) {
+      throw new ApiError(400, "Service image is required");
+    }
+
+    const imageUrl = `/uploads/services/${service.imageUrl.filename}`;
+
+    const created = await this.serviceRepo.save({
+      serviceName: service.serviceName,
+      price: service.price,
+      description: service.description,
+      categoryId: service.categoryId,
+      imageUrl: imageUrl,
+    });
+
     return !!created;
   }
 

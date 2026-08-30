@@ -20,8 +20,7 @@ myWorkRouter.post("/all", async (req, res) => {
     const result = await myWorkController.getMyWorks(reqBody);
     res.status(200).send(result);
   } catch (error) {
-    console.error("Error fetching my works:", error);
-    res.status(500).send({ message: "Internal Server Error" });
+    throw error;
   }
 });
 
@@ -59,8 +58,7 @@ myWorkRouter.get("/all", async (req, res) => {
     const categories = await myWorkController.getMyWorks(req.body);
     res.status(200).json(categories);
   } catch (error) {
-    console.error("Error fetching services:", error);
-    res.status(500).send({ message: "Internal Server Error" });
+    throw error;
   }
 });
 

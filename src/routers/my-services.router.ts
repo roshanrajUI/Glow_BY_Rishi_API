@@ -71,8 +71,7 @@ myServicesRouter.get("/all", async (req, res) => {
     const services = await serviceController.getAllServices();
     res.status(200).send(services);
   } catch (error) {
-    console.error("Error fetching services:", error);
-    res.status(500).send({ message: "Internal Server Error" });
+    throw error;
   }
 });
 
@@ -84,8 +83,7 @@ myServicesRouter.get("/services-by-category/:categoryId", async (req, res) => {
 
     res.status(200).json(categoryServices);
   } catch (error) {
-    console.error("Error fetching services:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    throw error;
   }
 });
 

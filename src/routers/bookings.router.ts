@@ -13,8 +13,7 @@ bookingRouter.post("/create", async (req, res) => {
     const booking = await bookingController.createBooking(req.body);
     res.status(200).json(booking);
   } catch (error) {
-    console.log("Error Creating Booking", error);
-    res.status(500).send({ message: "Internal server error" });
+    throw error;
   }
 });
 
@@ -26,8 +25,7 @@ bookingRouter.get("/", async (req, res) => {
     const result = await bookingController.getAllBookingsByStatus(status);
     res.status(200).json(result);
   } catch (error) {
-    console.log("Error Fetching Booking", error);
-    res.status(500).send({ message: "Internal server error" });
+    throw error;
   }
 });
 
@@ -37,7 +35,7 @@ bookingRouter.get("/booking-reviews", async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     console.log("Error Fetching Booking Reviews", error);
-    res.status(500).send({ message: "Internal server error" });
+    throw error;
   }
 });
 
@@ -51,8 +49,7 @@ bookingRouter.get("/:bookingId", async (req, res) => {
       res.status(404).send({ message: "Booking not found" });
     }
   } catch (error) {
-    console.log("Error Fetching Booking", error);
-    res.status(500).send({ message: "Internal server error" });
+    throw error;
   }
 });
 
@@ -61,8 +58,7 @@ bookingRouter.post("/update", async (req, res) => {
     const result = await bookingController.updateBooking(req.body);
     res.status(200).send(result);
   } catch (error) {
-    console.log("Error Updating Booking", error);
-    res.status(500).send({ message: "Internal server error" });
+    throw error;
   }
 });
 
@@ -74,8 +70,7 @@ bookingRouter.post(
       const result = await bookingController.createBookingReview(req.body);
       res.status(200).send(result);
     } catch (error) {
-      console.log("Error Creating Booking Review", error);
-      res.status(500).send({ message: "Internal server error" });
+      throw error;
     }
   },
 );
@@ -99,8 +94,7 @@ bookingRouter.get("/client-bookings/:clientId", async (req, res) => {
     const result = await bookingController.getBookingsByClientId(clientId);
     res.status(200).send(result);
   } catch (error) {
-    console.log("Error Fetching Client Bookings", error);
-    res.status(500).send({ message: "Internal server error" });
+    throw error;
   }
 });
 
@@ -111,8 +105,7 @@ bookingRouter.get("/client-bookings/:phoneNumber", async (req, res) => {
       await bookingController.getBookingsByClientPhoneNumber(phoneNumber);
     res.status(200).send(result);
   } catch (error) {
-    console.log("Error Fetching Client Bookings", error);
-    res.status(500).send({ message: "Internal server error" });
+    throw error;
   }
 });
 

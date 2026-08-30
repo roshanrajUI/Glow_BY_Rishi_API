@@ -55,9 +55,10 @@ async function startServer() {
     app.use(GlobalErrorHandling.setUp());
 
     // Start server
-    app.listen(3000, () => {
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
       console.log("Database connected successfully");
-      console.log("Server running on port 3000");
+      console.log(`Server running on port ${port}`);
     });
   } catch (err) {
     console.log("Failed to initialize the application:", err);

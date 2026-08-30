@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { Service } from "typedi";
-import { ApiError } from "../models/api.erro";
+import { ApiError } from "../models/api.error";
 import { VerifyBooking } from "../models/interfaces/booking.interfaces";
 
 @Service()

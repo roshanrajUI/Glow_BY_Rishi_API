@@ -25,6 +25,9 @@
 					"categoryId": {
 						"type": "string"
 					},
+					"imageUrl": {
+						"type": "string"
+					},
 					"isActive": {
 						"type": "boolean"
 					},
@@ -228,6 +231,69 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"Express.Multer.File": {
+				"description": "Object containing file metadata and access information.",
+				"properties": {
+					"fieldname": {
+						"type": "string",
+						"description": "Name of the form field associated with this file."
+					},
+					"originalname": {
+						"type": "string",
+						"description": "Name of the file on the uploader's computer."
+					},
+					"encoding": {
+						"type": "string",
+						"description": "Value of the `Content-Transfer-Encoding` header for this file.",
+						"deprecated": true
+					},
+					"mimetype": {
+						"type": "string",
+						"description": "Value of the `Content-Type` header for this file."
+					},
+					"size": {
+						"type": "number",
+						"format": "double",
+						"description": "Size of the file in bytes."
+					},
+					"stream": {
+						"type": "string",
+						"format": "byte",
+						"description": "A readable stream of this file. Only available to the `_handleFile`\r\ncallback for custom `StorageEngine`s."
+					},
+					"destination": {
+						"type": "string",
+						"description": "`DiskStorage` only: Directory to which this file has been uploaded."
+					},
+					"filename": {
+						"type": "string",
+						"description": "`DiskStorage` only: Name of this file within `destination`."
+					},
+					"path": {
+						"type": "string",
+						"description": "`DiskStorage` only: Full path to the uploaded file."
+					},
+					"buffer": {
+						"type": "string",
+						"format": "byte",
+						"description": "`MemoryStorage` only: A Buffer containing the entire file."
+					}
+				},
+				"required": [
+					"fieldname",
+					"originalname",
+					"encoding",
+					"mimetype",
+					"size",
+					"stream",
+					"destination",
+					"filename",
+					"path",
+					"buffer"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"ServiceCreate": {
 				"properties": {
 					"serviceId": {
@@ -246,16 +312,15 @@
 					"description": {
 						"type": "string"
 					},
-					"isActive": {
-						"type": "boolean"
+					"imageUrl": {
+						"$ref": "#/components/schemas/Express.Multer.File"
 					}
 				},
 				"required": [
 					"categoryId",
 					"serviceName",
 					"price",
-					"description",
-					"isActive"
+					"description"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -378,94 +443,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"BookedInfo": {
-				"properties": {
-					"bookingNumber": {
-						"type": "string"
-					},
-					"bookingDate": {
-						"type": "string"
-					},
-					"bookingTime": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"bookingNumber",
-					"bookingDate",
-					"bookingTime"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"CreateBookingService": {
-				"properties": {
-					"bookingId": {
-						"type": "string"
-					},
-					"serviceId": {
-						"type": "string"
-					},
-					"price": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"serviceId",
-					"price"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"CreateBooking": {
-				"properties": {
-					"bookedServices": {
-						"items": {
-							"$ref": "#/components/schemas/CreateBookingService"
-						},
-						"type": "array"
-					},
-					"bookingDate": {
-						"type": "string"
-					},
-					"bookingTime": {
-						"type": "string"
-					},
-					"location": {
-						"type": "string"
-					},
-					"totalPrice": {
-						"type": "number",
-						"format": "double"
-					},
-					"clientName": {
-						"type": "string"
-					},
-					"phoneNumber": {
-						"type": "string"
-					},
-					"gmail": {
-						"type": "string"
-					},
-					"notes": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"bookedServices",
-					"bookingDate",
-					"bookingTime",
-					"location",
-					"totalPrice",
-					"clientName",
-					"phoneNumber",
-					"gmail",
-					"notes"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"BookingStatus": {
 				"type": "string",
 				"enum": [
@@ -475,56 +452,6 @@
 					"Completed",
 					"Cancelled"
 				]
-			},
-			"BookingReviews": {
-				"properties": {
-					"bookingId": {
-						"type": "string"
-					},
-					"clientId": {
-						"type": "string"
-					},
-					"bookingDate": {
-						"type": "string"
-					},
-					"location": {
-						"type": "string"
-					},
-					"status": {
-						"$ref": "#/components/schemas/BookingStatus"
-					},
-					"notes": {
-						"type": "string"
-					},
-					"reviewRating": {
-						"type": "number",
-						"format": "double"
-					},
-					"reviewText": {
-						"type": "string"
-					},
-					"reviewDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"isActive": {
-						"type": "boolean"
-					},
-					"client": {
-						"$ref": "#/components/schemas/Client"
-					}
-				},
-				"required": [
-					"bookingId",
-					"clientId",
-					"bookingDate",
-					"location",
-					"status",
-					"isActive",
-					"client"
-				],
-				"type": "object",
-				"additionalProperties": false
 			},
 			"Booking": {
 				"properties": {
@@ -657,6 +584,148 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"CreateBookingService": {
+				"properties": {
+					"bookingId": {
+						"type": "string"
+					},
+					"serviceId": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"serviceId",
+					"price"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateBooking": {
+				"properties": {
+					"bookedServices": {
+						"items": {
+							"$ref": "#/components/schemas/CreateBookingService"
+						},
+						"type": "array"
+					},
+					"bookingDate": {
+						"type": "string"
+					},
+					"bookingTime": {
+						"type": "string"
+					},
+					"location": {
+						"type": "string"
+					},
+					"totalPrice": {
+						"type": "number",
+						"format": "double"
+					},
+					"clientName": {
+						"type": "string"
+					},
+					"phoneNumber": {
+						"type": "string"
+					},
+					"gmail": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"bookedServices",
+					"bookingDate",
+					"bookingTime",
+					"location",
+					"totalPrice",
+					"clientName",
+					"phoneNumber",
+					"gmail",
+					"notes"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BookingReviews": {
+				"properties": {
+					"bookingId": {
+						"type": "string"
+					},
+					"clientId": {
+						"type": "string"
+					},
+					"bookingDate": {
+						"type": "string"
+					},
+					"location": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/BookingStatus"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"reviewRating": {
+						"type": "number",
+						"format": "double"
+					},
+					"reviewText": {
+						"type": "string"
+					},
+					"reviewDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"client": {
+						"$ref": "#/components/schemas/Client"
+					}
+				},
+				"required": [
+					"bookingId",
+					"clientId",
+					"bookingDate",
+					"location",
+					"status",
+					"isActive",
+					"client"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateBookingReview": {
+				"properties": {
+					"bookingNumber": {
+						"type": "string"
+					},
+					"clientNumber": {
+						"type": "string"
+					},
+					"rating": {
+						"type": "number",
+						"format": "double"
+					},
+					"review": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"bookingNumber",
+					"clientNumber",
+					"rating"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"ClientBooking": {
 				"properties": {
 					"phoneNumber": {
@@ -688,6 +757,22 @@
 					"bookingNumber",
 					"gmail",
 					"otp"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ResendOtp": {
+				"properties": {
+					"bookingNumber": {
+						"type": "string"
+					},
+					"gmail": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"bookingNumber",
+					"gmail"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1303,7 +1388,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/BookedInfo"
+									"$ref": "#/components/schemas/Booking"
 								}
 							}
 						}
@@ -1419,6 +1504,38 @@
 						}
 					}
 				]
+			}
+		},
+		"/api/bookings/create-review": {
+			"post": {
+				"operationId": "CreateBookingReview",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Bookings"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateBookingReview"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/api/bookings/update": {
@@ -1626,6 +1743,38 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/VerifyBooking"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bookings/resend-otp": {
+			"post": {
+				"operationId": "ResendOtp",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Bookings"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ResendOtp"
 							}
 						}
 					}

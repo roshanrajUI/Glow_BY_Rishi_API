@@ -18,7 +18,7 @@ export interface ServiceCreate {
   serviceName: string;
   price: number;
   description: string;
-  isActive: boolean;
+  imageUrl?: Express.Multer.File;
 }
 
 export interface MyWorkCreate {
