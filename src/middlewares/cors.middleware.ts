@@ -7,6 +7,8 @@ const allowedOrigins = (req: Request, res: Response, next: NextFunction) => {
     "http://localhost:4200",
     "http://localhost:8000",
     "http://localhost:8000/api",
+    "https://glow-by-rishi-api.onrender.com/api",
+    "https://glow-by-rishi-ui.onrender.com/",
   ];
   const origin = req.headers.origin!;
   const host = req.headers.host!;
