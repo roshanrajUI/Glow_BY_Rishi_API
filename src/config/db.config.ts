@@ -12,11 +12,11 @@ import { Otp } from "../models/entities/otp";
 
 const dbConfig: DataSource = new DataSource({
   type: "mysql",
-  host: "localhost",
-  port: 3306,
-  username: "root",
-  password: "admin",
-  database: "glow_by_rishi",
+  host: process.env.DB_HOST || "localhost",
+  port: Number(process.env.DB_PORT) || 3306,
+  username: process.env.DB_USERNAME || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_DATABASE || "glow_by_rishi",
   timezone: "+05:30",
   entities: [
     User,
@@ -30,6 +30,9 @@ const dbConfig: DataSource = new DataSource({
     Client,
     Otp,
   ],
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 export default dbConfig;

@@ -6,6 +6,7 @@ import { CorsMiddleware } from "./middlewares/cors.middleware";
 import { GlobalErrorHandling } from "./middlewares/globalErrHandling";
 import { Container } from "typedi";
 import { DataSource } from "typeorm";
+import "dotenv/config";
 
 const app = express();
 
