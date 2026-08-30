@@ -75,7 +75,7 @@ CREATE TABLE bookings (
     total_price DECIMAL(10,2) DEFAULT 0,
     status ENUM('OTP Pending', 'Pending', 'Confirmed', 'Completed', 'Cancelled') DEFAULT 'OTP Pending',
     notes TEXT,
-    isOtpVerified BOOLEAN DEFAULT FALSE,
+    is_otp_verified BOOLEAN DEFAULT FALSE,
     review_rating TINYINT,
     review_text TEXT,
     review_date DATETIME,
