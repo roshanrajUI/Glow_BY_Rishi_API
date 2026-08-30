@@ -4,7 +4,8 @@
   "description": "It is a website for a beautican",
   "main": "index.js",
   "scripts": {
-    "start": "node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
     "tsoa": "tsoa spec",
     "dev": "npm run tsoa && nodemon src/server.ts"
   },
