@@ -1,40 +1,39 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { Service } from "typedi";
 import { ApiError } from "../models/api.error";
 import { VerifyBooking } from "../models/interfaces/booking.interfaces";
 
 @Service()
 export class MailService {
-  private transporter;
+  private resend: Resend;
 
   constructor() {
-    this.transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: "roshan.freelancer499@gmail.com", // generated ethereal user
-        pass: "niygbpuwqxszylkp", // generated ethereal password
-      },
-    });
+    this.resend = new Resend(process.env.RESEND_API_KEY);
   }
 
   async sendMail(to: string, subject: string, html: string): Promise<void> {
-    const mailOptions = {
-      from: "roshan.freelancer499@gmail.com", // sender address
-      to,
-      subject,
-      html,
-    };
     try {
-      await this.transporter.sendMail(mailOptions);
+      const { data, error } = await this.resend.emails.send({
+        from: "onboarding@resend.dev",
+        to: "roshanraj.ui499@gmail.com",
+        subject,
+        html,
+      });
+
+      if (error) {
+        console.error("Error sending email:", error);
+        throw new ApiError(500, "Failed to send email");
+      }
     } catch (error) {
       console.error("Error sending email:", error);
+      if (error instanceof ApiError) {
+        throw error;
+      }
       throw new ApiError(500, "Failed to send email");
     }
   }
 
-  async verifyBookingMail(bookingDetails: VerifyBooking) {
+  async verifyBookingMail(bookingDetails: VerifyBooking): Promise<void> {
     await this.sendMail(
       bookingDetails.gmail,
       "Booking OTP Verification",

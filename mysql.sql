@@ -121,7 +121,7 @@ CREATE TABLE work_portfolio (
 
 -- otp
 create table otp(
-    otp_id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     booking_number CHAR(8) UNIQUE NOT NULL,
     gmail VARCHAR(255),
     otp_hash varchar(255),
