@@ -6,7 +6,7 @@ export class CreateMyWork {
       serviceId: Joi.string().required(),
       title: Joi.string().required(),
       description: Joi.string().allow(null).allow(""),
-      imageUrl: Joi.string().allow(null).allow(""),
+      imageUrl: Joi.string().allow(null, "").uri(),
     });
   }
 }

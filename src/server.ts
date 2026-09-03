@@ -44,7 +44,7 @@ async function startServer() {
       "/swagger.json",
       express.static(path.resolve(process.cwd(), "public")),
     );
-
+    app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
     // Routes
     app.use("/api/services", myServicesRouter);
     app.use("/api/my-works", myWorkRouter);

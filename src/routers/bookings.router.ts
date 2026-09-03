@@ -98,16 +98,19 @@ bookingRouter.get("/client-bookings/:clientId", async (req, res) => {
   }
 });
 
-bookingRouter.get("/client-bookings/:phoneNumber", async (req, res) => {
-  try {
-    const phoneNumber = req.params.phoneNumber;
-    const result =
-      await bookingController.getBookingsByClientPhoneNumber(phoneNumber);
-    res.status(200).send(result);
-  } catch (error) {
-    throw error;
-  }
-});
+bookingRouter.get(
+  "/client-bookings/by-phonenumber/:phoneNumber",
+  async (req, res) => {
+    try {
+      const phoneNumber = req.params.phoneNumber;
+      const result =
+        await bookingController.getBookingsByClientPhoneNumber(phoneNumber);
+      res.status(200).send(result);
+    } catch (error) {
+      throw error;
+    }
+  },
+);
 
 bookingRouter.post("/client-bookings", async (req, res) => {
   try {

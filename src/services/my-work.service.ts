@@ -17,12 +17,19 @@ export default class MyWorkService {
     return await this.myWorkRepository.getMyWorks(reqBody);
   }
 
-  async createMyWork(myWork: MyWorkCreate): Promise<Boolean> {
-    return this.myWorkRepository.createMyWork(myWork);
+  async createMyWork(
+    myWork: MyWorkCreate,
+    image: Express.Multer.File,
+  ): Promise<Boolean> {
+    return this.myWorkRepository.createMyWork(myWork, image);
   }
 
-  async updateMyWork(myWorkId: string, myWork: MyWorkCreate): Promise<Boolean> {
-    return await this.myWorkRepository.updateMyWork(myWorkId, myWork);
+  async updateMyWork(
+    myWorkId: string,
+    myWork: MyWorkCreate,
+    image?: Express.Multer.File,
+  ): Promise<Boolean> {
+    return await this.myWorkRepository.updateMyWork(myWorkId, myWork, image);
   }
 
   async deleteMyWork(myWorkId: string): Promise<Boolean> {

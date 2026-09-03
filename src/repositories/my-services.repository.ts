@@ -8,28 +8,28 @@ import { ApiError } from "../models/api.error";
 export default class ServicesRepository {
   private readonly serviceRepo = dbConfig.getRepository(MyService);
 
-  async createService(service: ServiceCreate): Promise<boolean> {
+  async createService(
+    service: ServiceCreate,
+    image: Express.Multer.File,
+  ): Promise<boolean> {
     const isServiceExist = await this.isServiceExist(service.serviceName);
-
+    const { serviceName, description, price } = service;
     if (isServiceExist) {
-      throw new ApiError(
-        409,
-        `Service with ${service.serviceName} already exists`,
-      );
+      throw new ApiError(409, `Service with ${serviceName} already exists`);
     }
 
-    if (!service.imageUrl) {
+    if (!image) {
       throw new ApiError(400, "Service image is required");
     }
 
-    const imageUrl = `/uploads/services/${service.imageUrl.filename}`;
+    const imageUrl = `/uploads/services/${image.filename}`;
 
     const created = await this.serviceRepo.save({
-      serviceName: service.serviceName,
-      price: service.price,
-      description: service.description,
+      serviceName,
+      price,
+      description,
       categoryId: service.categoryId,
-      imageUrl: imageUrl,
+      imageUrl,
     });
 
     return !!created;
@@ -38,16 +38,29 @@ export default class ServicesRepository {
   async updateService(
     serviceId: string,
     service: ServiceCreate,
+    image?: Express.Multer.File,
   ): Promise<Boolean> {
     const { serviceName, description, price } = service;
-    const isServiceExist = await this.isServiceExist(serviceId);
-    if (!isServiceExist) {
+    const existingService = await this.serviceRepo.findOne({
+      where: { serviceId, isActive: true },
+    });
+
+    if (!existingService) {
       throw new ApiError(409, `Service does not exists`);
+    }
+
+    let imageUrl = existingService.imageUrl;
+    if (image) {
+      const newImageUrl = `/uploads/services/${image.filename}`;
+      imageUrl =
+        existingService.imageUrl !== newImageUrl
+          ? newImageUrl
+          : existingService.imageUrl;
     }
 
     const updated = await this.serviceRepo.update(
       { serviceId },
-      { serviceName, price, description },
+      { serviceName, price, description, imageUrl },
     );
     return updated.affected === 1;
   }

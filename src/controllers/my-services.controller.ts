@@ -1,4 +1,15 @@
-import { Body, Delete, Get, Path, Post, Put, Route, Tags } from "tsoa";
+import {
+  Body,
+  Delete,
+  FormField,
+  Get,
+  Path,
+  Post,
+  Put,
+  Route,
+  Tags,
+  UploadedFile,
+} from "tsoa";
 import ServicesService from "../services/my-services.service";
 import { Service } from "typedi";
 import MyService from "../models/entities/my-services.entity";
@@ -23,16 +34,42 @@ export default class ServicesController {
   }
 
   @Post("/")
-  public async createService(@Body() service: ServiceCreate): Promise<Boolean> {
-    return await this.servicesService.createService(service);
+  public async createService(
+    @FormField() serviceName: string,
+    @FormField() price: number,
+    @FormField() description: string,
+    @FormField() categoryId: string,
+    @UploadedFile() imageUrl: Express.Multer.File,
+  ): Promise<Boolean> {
+    const service: ServiceCreate = {
+      serviceName,
+      price,
+      description,
+      categoryId,
+    };
+    return await this.servicesService.createService(service, imageUrl);
   }
 
   @Put("/:serviceId")
   public async updateService(
     @Path() serviceId: string,
-    @Body() service: ServiceCreate,
+    @FormField() serviceName: string,
+    @FormField() price: number,
+    @FormField() description: string,
+    @FormField() categoryId: string,
+    @UploadedFile() imageUrl?: Express.Multer.File,
   ): Promise<Boolean> {
-    return await this.servicesService.updateService(serviceId, service);
+    const service: ServiceCreate = {
+      serviceName,
+      price,
+      description,
+      categoryId,
+    };
+    return await this.servicesService.updateService(
+      serviceId,
+      service,
+      imageUrl,
+    );
   }
 
   @Delete("/:serviceId")

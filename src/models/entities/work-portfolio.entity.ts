@@ -31,6 +31,9 @@ export default class WorkPortfolio {
   @Column("date", { name: "work_date", nullable: false })
   workDate!: Date;
 
+  @Column("char", { name: "user_id", length: 36, nullable: false })
+  userId!: string;
+
   @Column("boolean", { name: "is_active", default: true })
   isActive!: boolean;
 

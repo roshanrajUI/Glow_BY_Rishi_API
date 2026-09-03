@@ -25,7 +25,7 @@ export interface MyWorkCreate {
   serviceId: string;
   title: string;
   description: string;
-  imageUrl: string;
+  imageUrl?: string;
   userId?: string;
 }
 

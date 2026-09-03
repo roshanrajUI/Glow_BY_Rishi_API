@@ -3,6 +3,7 @@ import MyWorkController from "../controllers/my-work.controller";
 import { Container } from "typedi";
 import { Validation } from "../middlewares/validation";
 import { CreateMyWork } from "../models/joi-schemas/work-create";
+import { imageUpload } from "../middlewares/image-upload";
 
 const myWorkRouter = Router();
 const myWorkController = Container.get(MyWorkController);
@@ -26,10 +27,20 @@ myWorkRouter.post("/all", async (req, res) => {
 
 myWorkRouter.post(
   "/",
+  imageUpload("my-works").single("imageUrl"),
   Validation.run(CreateMyWork.setUp(), "body"),
   async (req, res) => {
     try {
-      const myWork = await myWorkController.createMyWork(req.body);
+      if (!req.file) {
+        return res.status(400).json({ message: "Service image is required" });
+      }
+      const { serviceId, title, description } = req.body;
+      const myWork = await myWorkController.createMyWork(
+        serviceId,
+        title,
+        description,
+        req.file,
+      );
       if (myWork) {
         res.status(200).json(myWork);
       }
@@ -41,11 +52,19 @@ myWorkRouter.post(
 
 myWorkRouter.put(
   "/:myWorkId",
+  imageUpload("my-works").single("imageUrl"),
   Validation.run(CreateMyWork.setUp(), "body"),
   async (req, res) => {
     try {
       const myWorkId = req.params.myWorkId as string;
-      const updated = await myWorkController.updatemyWork(myWorkId, req.body);
+      const { serviceId, title, description } = req.body;
+      const updated = await myWorkController.updatemyWork(
+        myWorkId,
+        serviceId,
+        title,
+        description,
+        req.file,
+      );
       res.status(200).send(updated);
     } catch (error) {
       throw error;

@@ -79,7 +79,7 @@ export default class BookingsContoller {
     return await this.bookingService.getClientBooking(bookingDetails);
   }
 
-  @Get("/client-bookings/:phoneNumber")
+  @Get("/client-bookings/by-phonenumber/:phoneNumber")
   public async getBookingsByClientPhoneNumber(
     @Query() phoneNumber: string,
   ): Promise<Booking[]> {

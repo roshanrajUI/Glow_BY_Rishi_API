@@ -1,4 +1,14 @@
-import { Body, Delete, Path, Post, Put, Route, Tags } from "tsoa";
+import {
+  Body,
+  Delete,
+  FormField,
+  Path,
+  Post,
+  Put,
+  Route,
+  Tags,
+  UploadedFile,
+} from "tsoa";
 import { Service } from "typedi";
 import WorkPortfolio from "../models/entities/work-portfolio.entity";
 import {
@@ -22,16 +32,35 @@ export default class MyWorkController {
   }
 
   @Post("/")
-  public async createMyWork(@Body() myWork: MyWorkCreate): Promise<Boolean> {
-    return await this.myWorkService.createMyWork(myWork);
+  public async createMyWork(
+    @FormField() serviceId: string,
+    @FormField() title: string,
+    @FormField() description: string,
+    @UploadedFile() imageUrl: Express.Multer.File,
+  ): Promise<Boolean> {
+    const myWork: MyWorkCreate = {
+      serviceId,
+      title,
+      description,
+    };
+
+    return await this.myWorkService.createMyWork(myWork, imageUrl);
   }
 
   @Put("/:myWorkId")
   public async updatemyWork(
     @Path() myWorkId: string,
-    @Body() myWork: MyWorkCreate,
+    @FormField() serviceId: string,
+    @FormField() title: string,
+    @FormField() description: string,
+    @UploadedFile() imageUrl?: Express.Multer.File,
   ): Promise<Boolean> {
-    return await this.myWorkService.updateMyWork(myWorkId, myWork);
+    const myWork: MyWorkCreate = {
+      serviceId,
+      title,
+      description,
+    };
+    return await this.myWorkService.updateMyWork(myWorkId, myWork, imageUrl);
   }
 
   @Delete("/:myWorkId")

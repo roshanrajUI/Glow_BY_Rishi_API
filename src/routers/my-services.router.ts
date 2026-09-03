@@ -3,16 +3,28 @@ import Container from "typedi";
 import ServicesController from "../controllers/my-services.controller";
 import { Validation } from "../middlewares/validation";
 import { CreateService } from "../models/joi-schemas/service-create";
+import { imageUpload } from "../middlewares/image-upload";
 
 const myServicesRouter = Router();
 const serviceController = Container.get(ServicesController);
 
 myServicesRouter.post(
   "/",
+  imageUpload("services").single("imageUrl"),
   Validation.run(CreateService.setup(), "body"),
   async (req, res) => {
     try {
-      const createdService = await serviceController.createService(req.body);
+      if (!req.file) {
+        return res.status(400).json({ message: "Service image is required" });
+      }
+      const { serviceName, price, description, categoryId } = req.body;
+      const createdService = await serviceController.createService(
+        serviceName,
+        price,
+        description,
+        categoryId,
+        req.file,
+      );
       if (createdService) {
         res.status(200).json(createdService);
       } else {
@@ -28,13 +40,19 @@ myServicesRouter.post(
 
 myServicesRouter.put(
   "/:serviceId",
+  imageUpload("services").single("imageUrl"),
   Validation.run(CreateService.setup(), "body"),
   async (req, res) => {
     try {
       const serviceId = req.params.serviceId as string;
+      const { serviceName, price, description, categoryId } = req.body;
       const updatedService = await serviceController.updateService(
         serviceId,
-        req.body,
+        serviceName,
+        price,
+        description,
+        categoryId,
+        req.file,
       );
 
       if (updatedService) {

@@ -7,12 +7,19 @@ import { ServiceCreate } from "../models/interfaces/common-interfaces";
 export default class ServicesService {
   constructor(private readonly servicesRepository: ServicesRepository) {}
 
-  createService(service: ServiceCreate): Promise<Boolean> {
-    return this.servicesRepository.createService(service);
+  createService(
+    service: ServiceCreate,
+    imageUrl: Express.Multer.File,
+  ): Promise<Boolean> {
+    return this.servicesRepository.createService(service, imageUrl);
   }
 
-  updateService(serviceId: string, service: ServiceCreate): Promise<Boolean> {
-    return this.servicesRepository.updateService(serviceId, service);
+  updateService(
+    serviceId: string,
+    service: ServiceCreate,
+    imageUrl?: Express.Multer.File,
+  ): Promise<Boolean> {
+    return this.servicesRepository.updateService(serviceId, service, imageUrl);
   }
 
   deleteService(serviceId: string): Promise<Boolean> {
