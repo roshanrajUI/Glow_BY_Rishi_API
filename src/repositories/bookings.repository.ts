@@ -183,6 +183,17 @@ export class BookingRepository {
     if (!bookingToUpdate) {
       throw new ApiError(404, "Booking Not Found");
     }
+    switch (bookingToUpdate.status) {
+      case BOOKINGSTATUS.OTPPENDING:
+        throw new ApiError(409, "Please Verify the OTP");
+      case BOOKINGSTATUS.CANCELLED:
+        throw new ApiError(409, "Booking is Cancelled");
+      case BOOKINGSTATUS.COMPLETED:
+        break;
+      default:
+        throw new ApiError(409, "Booking is not completed yet");
+    }
+
     if (bookingToUpdate.client.phoneNumber !== clientNumber) {
       throw new ApiError(403, "Client Number does not match the booking");
     }
