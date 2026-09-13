@@ -8,6 +8,7 @@ export interface PaginationWithData<T> {
 export interface CategoryCreate {
   categoryId?: string;
   categoryName: string;
+  imageUrl: Express.Multer.File;
   description: string;
   isActive?: boolean;
 }

@@ -12,12 +12,9 @@ export default class ServicesRepository {
     service: ServiceCreate,
     image: Express.Multer.File,
   ): Promise<boolean> {
-    const isServiceExist = await this.isServiceExist(service.serviceName);
     const { serviceName, description, price } = service;
-    if (isServiceExist) {
-      throw new ApiError(409, `Service with ${serviceName} already exists`);
-    }
 
+    await this.isServiceNameExist(serviceName);
     if (!image) {
       throw new ApiError(400, "Service image is required");
     }
@@ -48,6 +45,8 @@ export default class ServicesRepository {
     if (!existingService) {
       throw new ApiError(409, `Service does not exists`);
     }
+
+    await this.isServiceNameExist(serviceName);
 
     let imageUrl = existingService.imageUrl;
     if (image) {
@@ -111,6 +110,11 @@ export default class ServicesRepository {
         serviceName: serviceName,
       },
     });
+
+    if (isServiceExist) {
+      throw new ApiError(409, `Category Already Exists With ${serviceName}`);
+    }
+
     return !!isServiceExist;
   }
 }

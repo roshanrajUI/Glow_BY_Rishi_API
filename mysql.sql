@@ -18,6 +18,7 @@ CREATE TABLE users (
 CREATE TABLE service_category (
     category_id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     category_name VARCHAR(50) UNIQUE NOT NULL,
+    image_url VARCHAR(500) NOT NULL,
     description Text,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

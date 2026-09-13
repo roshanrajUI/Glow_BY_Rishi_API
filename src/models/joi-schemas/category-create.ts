@@ -5,6 +5,7 @@ export class CreateCategory {
     return Joi.object().keys({
       categoryName: Joi.string().required(),
       description: Joi.string().allow(null).allow(""),
+      imageUrl: Joi.string().allow(null, "").uri(),
       isActive: Joi.boolean().default(true).allow(null),
     });
   }

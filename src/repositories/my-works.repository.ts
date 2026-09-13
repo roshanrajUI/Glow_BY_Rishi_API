@@ -7,17 +7,21 @@ import {
 } from "../models/interfaces/common-interfaces";
 import { MyWorkRequest } from "../models/interfaces/my-work.interfaces";
 import { ApiError } from "../models/api.error";
+import User from "../models/entities/users.entity";
 
 @Service()
 export class MyWorkRepository {
   private readonly myWorkRepository = dbConfig.getRepository(WorkPortfolio);
+  private readonly usersRepo = dbConfig.getRepository(User);
 
   async createMyWork(
     myWork: MyWorkCreate,
     image: Express.Multer.File,
   ): Promise<Boolean> {
     const { serviceId, title, description } = myWork;
-    myWork.userId = "d3883544-a7bd-11f1-85f9-00090faa0001";
+    const users = await this.usersRepo.find({
+      where: { isActive: true },
+    });
     if (!image) {
       throw new ApiError(400, "Service Work image is required");
     }
@@ -28,7 +32,7 @@ export class MyWorkRepository {
       title,
       description,
       imageUrl,
-      userId: "d3883544-a7bd-11f1-85f9-00090faa0001",
+      userId: users[0].userId,
     });
     return !!created;
   }

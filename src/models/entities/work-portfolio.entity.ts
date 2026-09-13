@@ -16,9 +16,6 @@ export default class WorkPortfolio {
   @Column("uuid", { name: "service_id" })
   serviceId!: string;
 
-  // @Column("uuid", { name: "user_id" })
-  // userId!: string;
-
   @Column("varchar", { name: "title", length: 100, nullable: false })
   title!: string;
 

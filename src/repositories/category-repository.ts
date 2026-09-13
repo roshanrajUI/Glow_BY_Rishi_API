@@ -9,28 +9,28 @@ export default class CategoryRepo {
   private readonly categoryRepo = dbConfig.getRepository(Category);
 
   async createCategory(category: CategoryCreate): Promise<Category> {
-    const isCategoryExist = await this.categoryRepo.findOne({
-      where: [
-        {
-          categoryName: category.categoryName,
-          isActive: true,
-        },
-      ],
-    });
+    const { categoryName, description, imageUrl: image } = category;
 
-    if (isCategoryExist) {
-      throw new ApiError(
-        409,
-        `Category Already Exists With ${category.categoryName}`,
-      );
+    await this.isCategoryNameExist(categoryName);
+
+    if (!image) {
+      throw new ApiError(400, "Service image is required");
     }
-    return this.categoryRepo.save(category);
+
+    const imageUrl = `/uploads/categories/${image.filename}`;
+
+    return this.categoryRepo.save({
+      categoryName,
+      imageUrl,
+      description,
+    });
   }
 
   getAllCategory(): Promise<Category[]> {
     return this.categoryRepo.find({
       where: { isActive: true },
       relations: { services: true },
+      order: { createdAt: "ASC" },
     });
   }
 
@@ -38,7 +38,7 @@ export default class CategoryRepo {
     categoryId: string,
     category: CategoryCreate,
   ): Promise<Boolean> {
-    const { categoryName, description, isActive } = category;
+    const { categoryName, description, imageUrl, isActive } = category;
 
     if (!categoryId || !isActive) {
       throw new ApiError(409, "Category Not Found");
@@ -50,9 +50,12 @@ export default class CategoryRepo {
       throw new ApiError(409, "Category Not Found");
     }
 
+    await this.isCategoryNameExist(categoryName);
+    const image = `uploads/categories/${imageUrl.filename}`;
+
     const updated = await this.categoryRepo.update(
       { categoryId },
-      { categoryName, description, updatedAt: new Date() },
+      { categoryName, description, imageUrl: image, updatedAt: new Date() },
     );
     return updated.affected === 1;
   }
@@ -77,5 +80,20 @@ export default class CategoryRepo {
       },
     });
     return !!result;
+  }
+
+  async isCategoryNameExist(categoryName: string): Promise<Boolean> {
+    const isCategoryExist = await this.categoryRepo.findOne({
+      where: [
+        {
+          categoryName,
+        },
+      ],
+    });
+
+    if (isCategoryExist) {
+      throw new ApiError(409, `Category Already Exists With ${categoryName}`);
+    }
+    return !!isCategoryExist;
   }
 }

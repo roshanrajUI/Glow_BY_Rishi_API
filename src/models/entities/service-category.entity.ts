@@ -15,6 +15,9 @@ export default class Category {
   @Column("varchar", { name: "category_name", length: 100, nullable: false })
   categoryName!: string;
 
+  @Column("varchar", { name: "image_url", nullable: false })
+  imageUrl!: string;
+
   @Column("text", { name: "description", nullable: true })
   description?: string;
 

@@ -3,19 +3,27 @@ import Container from "typedi";
 import { CategoryController } from "../controllers/category.controller";
 import { Validation } from "../middlewares/validation";
 import { CreateCategory } from "../models/joi-schemas/category-create";
+import { imageUpload } from "../middlewares/image-upload";
 
 const categoryRouter = Router();
 const categoryController = Container.get(CategoryController);
 
 categoryRouter.put(
   "/:categoryId",
+  imageUpload("categories").single("imageUrl"),
   Validation.run(CreateCategory.setUp(), "body"),
   async (req, res) => {
     try {
+      if (!req.file) {
+        return res.status(400).json({ message: "Category image is required" });
+      }
       const categoryId = req.params.categoryId as string;
+      const { categoryName, description } = req.body;
       const updated = await categoryController.updateCategory(
         categoryId,
-        req.body,
+        categoryName,
+        description,
+        req.file,
       );
       res.status(200).send(updated);
     } catch (error) {
@@ -26,10 +34,19 @@ categoryRouter.put(
 
 categoryRouter.post(
   "/",
+  imageUpload("categories").single("imageUrl"),
   Validation.run(CreateCategory.setUp(), "body"),
   async (req, res) => {
     try {
-      const category = await categoryController.createCategory(req.body);
+      if (!req.file) {
+        return res.status(400).json({ message: "Category image is required" });
+      }
+      const { categoryName, description } = req.body;
+      const category = await categoryController.createCategory(
+        categoryName,
+        description,
+        req.file,
+      );
       if (category) {
         res.status(200).json(category);
       }
