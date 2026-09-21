@@ -57,8 +57,13 @@ export default class BookingService {
   async updateBookingStatus(
     bookingId: string,
     status: BookingStatus,
+    reason?: string,
   ): Promise<Boolean> {
-    return await this.bookingRepository.updateBookingStatus(bookingId, status);
+    return await this.bookingRepository.updateBookingStatus(
+      bookingId,
+      status,
+      reason,
+    );
   }
 
   async getBookingsByClientPhoneNumber(

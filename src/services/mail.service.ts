@@ -57,4 +57,49 @@ export class MailService {
         <p>Best regards,<br/>Glow By Rishi Team</p>`,
     );
   }
+
+  async bookingCancel(
+    bookingNumber: string,
+    clientName: string,
+    clientEmail: string,
+    reason: string,
+  ) {
+    await this.sendMail(
+      clientEmail,
+      "Booking Cancelation",
+      `<p>Dear ${clientName},</p>
+      <p>
+        We are sorry to inform you that your booking #${bookingNumber} has been <b> Cancelled </b> due to ${reason}.</p>
+        <p>We apologize for any inconvenience caused and appreciate your understanding.</p>
+      `,
+    );
+  }
+
+  async bookingCompleted(
+    bookingNumber: string,
+    clientName: string,
+    clientEmail: string,
+  ) {
+    await this.sendMail(
+      clientEmail,
+      "Booking Completed",
+      `<p>Dear ${clientName},</p>
+       <p>We are happy to inform you that your booking #${bookingNumber} has been <b>Completed</b> successfully.</p>
+       <p>We appreciate your feedback. Please <a href="">add a review and rating</a>.</p> `,
+    );
+  }
+
+  async bookingConfirmed(
+    bookingNumber: string,
+    clientName: string,
+    clientEmail: string,
+  ) {
+    await this.sendMail(
+      clientEmail,
+      "Booking Confirmed",
+      `<p>Dear ${clientName},</p>
+       <p>We are happy to inform you that your booking #${bookingNumber} has been <b>Confirmed</b> successfully.</p>
+        `,
+    );
+  }
 }

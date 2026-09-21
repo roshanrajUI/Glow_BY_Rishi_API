@@ -214,26 +214,57 @@ export class BookingRepository {
 
   async updateBookingStatus(
     bookingId: string,
-    status: BookingStatus,
+    bookingStatus: BookingStatus,
+    reason?: string,
   ): Promise<Boolean> {
     const bookingToUpdate = await this.getBookingById(bookingId);
     if (!bookingToUpdate) {
       throw new ApiError(404, "Booking Not Found");
     }
-    if (bookingToUpdate.status === BOOKINGSTATUS.OTPPENDING) {
+    const {
+      bookingNumber,
+      client: { clientName, gmail },
+      status,
+    } = bookingToUpdate;
+
+    if (status === BOOKINGSTATUS.OTPPENDING) {
       throw new ApiError(409, "Please Verify the OTP");
     }
 
-    if (bookingToUpdate.status === BOOKINGSTATUS.COMPLETED) {
+    if (status === BOOKINGSTATUS.COMPLETED) {
       throw new ApiError(409, "Booking Already Completed");
     }
 
-    if (bookingToUpdate.status === BOOKINGSTATUS.CANCELLED) {
+    if (status === BOOKINGSTATUS.CANCELLED) {
       throw new ApiError(409, "Booking Already Cancelled");
     }
 
-    bookingToUpdate.status = status;
-    const result = await this.bookingRepository.update(bookingId, { status });
+    switch (bookingStatus) {
+      case "Confirmed":
+        this.mailService.bookingConfirmed(bookingNumber, clientName, gmail);
+        break;
+      case "Completed":
+        this.mailService.bookingCompleted(bookingNumber, clientName, gmail);
+        break;
+      case "Cancelled":
+        if (!reason) {
+          throw new ApiError(409, "Please Fill the Reason");
+        }
+        this.mailService.bookingCancel(
+          bookingNumber,
+          clientName,
+          gmail,
+          reason,
+        );
+        break;
+      default:
+        throw new ApiError(409, "Invalid Booking Status");
+    }
+
+    bookingToUpdate.status = bookingStatus;
+    const result = await this.bookingRepository.update(bookingId, {
+      status: bookingStatus,
+    });
     return result.affected === 1;
   }
 

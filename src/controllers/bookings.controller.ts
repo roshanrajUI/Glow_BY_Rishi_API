@@ -57,11 +57,17 @@ export default class BookingsContoller {
 
   @Post("/update-status")
   public async updateBookingStatus(
-    @Body() booking: { bookingId: string; status: BookingStatus },
+    @Body()
+    booking: {
+      bookingId: string;
+      status: BookingStatus;
+      reason?: string;
+    },
   ): Promise<Boolean> {
     return await this.bookingService.updateBookingStatus(
       booking.bookingId,
       booking.status,
+      booking.reason,
     );
   }
 
