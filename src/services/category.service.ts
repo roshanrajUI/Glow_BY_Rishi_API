@@ -1,7 +1,10 @@
 import { Service } from "typedi";
 import Category from "../models/entities/service-category.entity";
 import CategoryRepo from "../repositories/category-repository";
-import { CategoryCreate } from "../models/interfaces/common-interfaces";
+import {
+  CategoryCreate,
+  CategoryUpdate,
+} from "../models/interfaces/common-interfaces";
 
 @Service()
 export class CategoryService {
@@ -17,7 +20,7 @@ export class CategoryService {
 
   async updateCategory(
     categoryId: string,
-    category: CategoryCreate,
+    category: CategoryUpdate,
   ): Promise<Boolean> {
     return await this.categoryRepo.updateCategory(categoryId, category);
   }

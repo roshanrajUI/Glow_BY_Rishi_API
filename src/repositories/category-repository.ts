@@ -1,7 +1,10 @@
 import { Service } from "typedi";
 import dbConfig from "../config/db.config";
 import Category from "../models/entities/service-category.entity";
-import { CategoryCreate } from "../models/interfaces/common-interfaces";
+import {
+  CategoryCreate,
+  CategoryUpdate,
+} from "../models/interfaces/common-interfaces";
 import { ApiError } from "../models/api.error";
 
 @Service()
@@ -36,27 +39,42 @@ export default class CategoryRepo {
 
   async updateCategory(
     categoryId: string,
-    category: CategoryCreate,
+    category: CategoryUpdate,
   ): Promise<Boolean> {
-    const { categoryName, description, imageUrl, isActive } = category;
-
-    if (!categoryId || !isActive) {
+    if (!categoryId) {
       throw new ApiError(409, "Category Not Found");
     }
+    const { categoryName, description, imageUrl } = category;
 
-    const extCategory = await this.isCategoryExist(categoryId);
+    const extCategory = await this.getCategoryById(categoryId);
 
     if (!extCategory) {
       throw new ApiError(409, "Category Not Found");
     }
 
-    await this.isCategoryNameExist(categoryName);
-    const image = `uploads/categories/${imageUrl.filename}`;
+    const exsCt = await this.categoryRepo.findOne({
+      where: [
+        {
+          categoryName,
+        },
+      ],
+    });
+    if (exsCt && exsCt.categoryId !== categoryId) {
+      throw new ApiError(409, `Category Already Exists With ${categoryName}`);
+    }
+    extCategory.categoryName = categoryName;
 
-    const updated = await this.categoryRepo.update(
-      { categoryId },
-      { categoryName, description, imageUrl: image, updatedAt: new Date() },
-    );
+    if (imageUrl) {
+      const image = `/uploads/categories/${imageUrl.filename}`;
+      extCategory.imageUrl = image;
+    }
+
+    if (description) {
+      extCategory.description = description;
+    }
+    extCategory.updatedAt = new Date();
+
+    const updated = await this.categoryRepo.update({ categoryId }, extCategory);
     return updated.affected === 1;
   }
 
@@ -95,5 +113,17 @@ export default class CategoryRepo {
       throw new ApiError(409, `Category Already Exists With ${categoryName}`);
     }
     return !!isCategoryExist;
+  }
+
+  async getCategoryById(categoryId: string): Promise<Category> {
+    const result = await this.categoryRepo.findOneBy({
+      categoryId,
+    });
+
+    if (!result) {
+      throw new ApiError(402, "Category Not Found");
+    }
+
+    return result;
   }
 }

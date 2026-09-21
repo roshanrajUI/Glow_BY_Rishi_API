@@ -59,8 +59,9 @@ export default class MyWorkController {
       serviceId,
       title,
       description,
+      imageUrl,
     };
-    return await this.myWorkService.updateMyWork(myWorkId, myWork, imageUrl);
+    return await this.myWorkService.updateMyWork(myWorkId, myWork);
   }
 
   @Delete("/:myWorkId")

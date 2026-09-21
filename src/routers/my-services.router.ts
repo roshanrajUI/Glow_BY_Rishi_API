@@ -4,6 +4,7 @@ import ServicesController from "../controllers/my-services.controller";
 import { Validation } from "../middlewares/validation";
 import { CreateService } from "../models/joi-schemas/service-create";
 import { imageUpload } from "../middlewares/image-upload";
+import { UpdateService } from "../models/joi-schemas/service-update";
 
 const myServicesRouter = Router();
 const serviceController = Container.get(ServicesController);
@@ -41,7 +42,7 @@ myServicesRouter.post(
 myServicesRouter.put(
   "/:serviceId",
   imageUpload("services").single("imageUrl"),
-  Validation.run(CreateService.setup(), "body"),
+  Validation.run(UpdateService.setup(), "body"),
   async (req, res) => {
     try {
       const serviceId = req.params.serviceId as string;

@@ -1,7 +1,10 @@
 import { Service } from "typedi";
 import dbConfig from "../config/db.config";
 import MyService from "../models/entities/my-services.entity";
-import { ServiceCreate } from "../models/interfaces/common-interfaces";
+import {
+  ServiceCreate,
+  ServiceUpdate,
+} from "../models/interfaces/common-interfaces";
 import { ApiError } from "../models/api.error";
 
 @Service()
@@ -34,10 +37,10 @@ export default class ServicesRepository {
 
   async updateService(
     serviceId: string,
-    service: ServiceCreate,
+    service: ServiceUpdate,
     image?: Express.Multer.File,
   ): Promise<Boolean> {
-    const { serviceName, description, price } = service;
+    const { categoryId, serviceName, description, price } = service;
     const existingService = await this.serviceRepo.findOne({
       where: { serviceId, isActive: true },
     });
@@ -46,20 +49,35 @@ export default class ServicesRepository {
       throw new ApiError(409, `Service does not exists`);
     }
 
-    await this.isServiceNameExist(serviceName);
+    if (serviceName) {
+      const extService = await this.serviceRepo.findOne({
+        where: [
+          {
+            serviceName,
+          },
+        ],
+      });
 
-    let imageUrl = existingService.imageUrl;
+      if (extService && extService.serviceId !== serviceId) {
+        throw new ApiError(409, `Service Already Exists With ${serviceName}`);
+      }
+
+      existingService.serviceName = serviceName;
+    }
+
     if (image) {
       const newImageUrl = `/uploads/services/${image.filename}`;
-      imageUrl =
-        existingService.imageUrl !== newImageUrl
-          ? newImageUrl
-          : existingService.imageUrl;
+      existingService.imageUrl = newImageUrl;
     }
+
+    existingService.categoryId = categoryId;
+    existingService.description = description;
+    existingService.price = price;
+    existingService.updatedAt = new Date();
 
     const updated = await this.serviceRepo.update(
       { serviceId },
-      { serviceName, price, description, imageUrl },
+      existingService,
     );
     return updated.affected === 1;
   }
@@ -112,7 +130,7 @@ export default class ServicesRepository {
     });
 
     if (isServiceExist) {
-      throw new ApiError(409, `Category Already Exists With ${serviceName}`);
+      throw new ApiError(409, `Service Already Exists With ${serviceName}`);
     }
 
     return !!isServiceExist;

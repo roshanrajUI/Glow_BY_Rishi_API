@@ -12,7 +12,6 @@ import {
 import { Service } from "typedi";
 import { CategoryService } from "../services/category.service";
 import Category from "../models/entities/service-category.entity";
-import { CategoryCreate } from "../models/interfaces/common-interfaces";
 
 @Service()
 @Route("api/categories")
@@ -24,10 +23,9 @@ export class CategoryController {
   public async updateCategory(
     @Path() categoryId: string,
     @FormField() categoryName: string,
-    @FormField() description: string,
-    @UploadedFile() imageUrl: Express.Multer.File,
+    @FormField() description?: string,
+    @UploadedFile() imageUrl?: Express.Multer.File,
   ): Promise<Boolean> {
-    // console.log("controller", category);
     const category = {
       categoryName,
       description,

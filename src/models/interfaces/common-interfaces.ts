@@ -13,6 +13,13 @@ export interface CategoryCreate {
   isActive?: boolean;
 }
 
+export interface CategoryUpdate {
+  categoryName: string;
+  imageUrl?: Express.Multer.File;
+  description?: string;
+  isActive?: boolean;
+}
+
 export interface ServiceCreate {
   serviceId?: string;
   categoryId: string;
@@ -22,11 +29,28 @@ export interface ServiceCreate {
   imageUrl?: Express.Multer.File;
 }
 
+export interface ServiceUpdate {
+  serviceId?: string;
+  categoryId: string;
+  serviceName: string;
+  price: number;
+  description?: string;
+  imageUrl?: Express.Multer.File;
+}
+
 export interface MyWorkCreate {
   serviceId: string;
   title: string;
   description: string;
-  imageUrl?: string;
+  imageUrl?: Express.Multer.File;
+  userId?: string;
+}
+
+export interface MyWorkUpdate {
+  serviceId: string;
+  title: string;
+  description: string;
+  imageUrl?: Express.Multer.File;
   userId?: string;
 }
 

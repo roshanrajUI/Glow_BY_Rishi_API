@@ -4,6 +4,7 @@ import { CategoryController } from "../controllers/category.controller";
 import { Validation } from "../middlewares/validation";
 import { CreateCategory } from "../models/joi-schemas/category-create";
 import { imageUpload } from "../middlewares/image-upload";
+import { UpdateCategory } from "../models/joi-schemas/category-update";
 
 const categoryRouter = Router();
 const categoryController = Container.get(CategoryController);
@@ -11,12 +12,9 @@ const categoryController = Container.get(CategoryController);
 categoryRouter.put(
   "/:categoryId",
   imageUpload("categories").single("imageUrl"),
-  Validation.run(CreateCategory.setUp(), "body"),
+  Validation.run(UpdateCategory.setUp(), "body"),
   async (req, res) => {
     try {
-      if (!req.file) {
-        return res.status(400).json({ message: "Category image is required" });
-      }
       const categoryId = req.params.categoryId as string;
       const { categoryName, description } = req.body;
       const updated = await categoryController.updateCategory(

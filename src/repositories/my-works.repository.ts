@@ -37,12 +37,8 @@ export class MyWorkRepository {
     return !!created;
   }
 
-  async updateMyWork(
-    myWorkId: string,
-    myWork: MyWorkCreate,
-    image?: Express.Multer.File,
-  ): Promise<Boolean> {
-    const { serviceId, title, description } = myWork;
+  async updateMyWork(myWorkId: string, myWork: MyWorkCreate): Promise<Boolean> {
+    const { serviceId, title, description, imageUrl } = myWork;
     const existingWork = await this.myWorkRepository.findOne({
       where: { workId: myWorkId, isActive: true },
     });
@@ -51,18 +47,17 @@ export class MyWorkRepository {
       throw new ApiError(409, "Work Not Found");
     }
 
-    let newImageUrl: string | undefined;
-    if (image) {
-      newImageUrl = `/uploads/my-works/${image.filename}`;
+    if (imageUrl) {
+      const newImageUrl = `/uploads/my-works/${imageUrl.filename}`;
+      existingWork.imageUrl = newImageUrl;
     }
-    const imageUrl =
-      existingWork.imageUrl !== newImageUrl
-        ? newImageUrl
-        : existingWork.imageUrl;
+    existingWork.serviceId = serviceId;
+    existingWork.title = title;
+    existingWork.description = description;
 
     const updated = await this.myWorkRepository.update(
       { workId: myWorkId },
-      { serviceId, title, description, imageUrl: imageUrl },
+      existingWork,
     );
     return updated.affected === 1;
   }
