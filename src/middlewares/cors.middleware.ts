@@ -2,17 +2,10 @@ import { Application, NextFunction, Request, Response } from "express";
 
 const allowedOrigins = (req: Request, res: Response, next: NextFunction) => {
   const allowOrigins = [
-    "localhost:4200",
-    "localhost:8000",
-    "glowbyrishi.in",
-    "https://glowbyrishi.in",
     "http://localhost:4200",
     "http://localhost:8000",
-    "http://localhost:8000/api",
-    "https://glow-by-rishi-api.onrender.com/api",
+    "https://glowbyrishi.in",
     "https://glow-by-rishi-ui.onrender.com",
-    "https://api.glowbyrishi.in",
-    "https://api.glowbyrishi.in/api",
   ];
   const origin = req.headers.origin!;
   const host = req.headers.host!;
