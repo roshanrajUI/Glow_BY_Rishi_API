@@ -14,6 +14,14 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+INSERT INTO users (user_name, gmail, phone_number, password)
+VALUES (
+    'Rishitha',
+    'dummy@gmail.com',
+    '7675997701',
+    'dummy'
+);
+
 -- service category
 CREATE TABLE service_category (
     category_id CHAR(36) PRIMARY KEY DEFAULT (UUID()),

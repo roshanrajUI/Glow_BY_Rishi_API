@@ -7,10 +7,14 @@ import {
   VerifyBooking,
 } from "../models/interfaces/booking.interfaces";
 import { Service } from "typedi";
+import { MailService } from "../services/mail.service";
 
 @Service()
 export class OtpRepository {
-  constructor(private dataSource: DataSource) {}
+  constructor(
+    private dataSource: DataSource,
+    private mailService: MailService,
+  ) {}
   otpRepository = dbConfig.getRepository(Otp);
 
   async createOtp(bookingNumber: string, gmail: string): Promise<string> {
@@ -64,6 +68,11 @@ export class OtpRepository {
       expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     };
     const result = await this.otpRepository.update(existingOtp.id, otp);
+    await this.mailService.verifyBookingMail({
+      gmail: gmail,
+      bookingNumber: bookingNumber,
+      otp: otp.otpHash, // otp with out hashing
+    });
     return result.affected === 1;
   }
 }
