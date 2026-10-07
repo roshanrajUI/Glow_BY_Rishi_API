@@ -1,4 +1,3 @@
-import { Service } from "typedi";
 import { BookingRepository } from "../repositories/bookings.repository";
 import {
   BookingReviews,
@@ -15,7 +14,6 @@ import { OtpRepository } from "../repositories/otp.repository";
 import { ApiError } from "../models/api.error";
 import { MailService } from "./mail.service";
 
-@Service()
 export default class BookingService {
   constructor(
     private readonly bookingRepository: BookingRepository,

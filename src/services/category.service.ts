@@ -1,4 +1,3 @@
-import { Service } from "typedi";
 import Category from "../models/entities/service-category.entity";
 import CategoryRepo from "../repositories/category-repository";
 import {
@@ -6,7 +5,6 @@ import {
   CategoryUpdate,
 } from "../models/interfaces/common-interfaces";
 
-@Service()
 export class CategoryService {
   constructor(private readonly categoryRepo: CategoryRepo) {}
 

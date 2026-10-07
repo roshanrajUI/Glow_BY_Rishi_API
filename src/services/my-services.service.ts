@@ -1,4 +1,3 @@
-import { Service } from "typedi";
 import ServicesRepository from "../repositories/my-services.repository";
 import MyService from "../models/entities/my-services.entity";
 import {
@@ -6,13 +5,12 @@ import {
   ServiceUpdate,
 } from "../models/interfaces/common-interfaces";
 
-@Service()
 export default class ServicesService {
   constructor(private readonly servicesRepository: ServicesRepository) {}
 
   createService(
     service: ServiceCreate,
-    imageUrl: Express.Multer.File,
+    imageUrl: File,
   ): Promise<Boolean> {
     return this.servicesRepository.createService(service, imageUrl);
   }
@@ -20,7 +18,7 @@ export default class ServicesService {
   updateService(
     serviceId: string,
     service: ServiceUpdate,
-    imageUrl?: Express.Multer.File,
+    imageUrl?: File,
   ): Promise<Boolean> {
     return this.servicesRepository.updateService(serviceId, service, imageUrl);
   }

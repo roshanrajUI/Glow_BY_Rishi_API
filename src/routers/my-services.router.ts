@@ -1,109 +1,106 @@
-import { Router } from "express";
-import Container from "typedi";
+import { Hono } from "hono";
+import { AppBindings } from "../types";
 import ServicesController from "../controllers/my-services.controller";
+import ServicesService from "../services/my-services.service";
+import ServicesRepository from "../repositories/my-services.repository";
 import { Validation } from "../middlewares/validation";
 import { CreateService } from "../models/joi-schemas/service-create";
-import { imageUpload } from "../middlewares/image-upload";
 import { UpdateService } from "../models/joi-schemas/service-update";
+import { extractFile } from "../lib/image-upload";
 
-const myServicesRouter = Router();
-const serviceController = Container.get(ServicesController);
+const myServicesRouter = new Hono<{ Bindings: AppBindings }>();
 
-myServicesRouter.post(
-  "/",
-  imageUpload("services").single("imageUrl"),
-  Validation.run(CreateService.setup(), "body"),
-  async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: "Service image is required" });
-      }
-      const { serviceName, price, description, categoryId } = req.body;
-      const createdService = await serviceController.createService(
-        serviceName,
-        price,
-        description,
-        categoryId,
-        req.file,
-      );
-      if (createdService) {
-        res.status(200).json(createdService);
-      } else {
-        res.status(409).json({
-          message: "Failed to Create Service",
-        });
-      }
-    } catch (error) {
-      throw error;
-    }
-  },
-);
+function getController(env: AppBindings): ServicesController {
+  const repo = new ServicesRepository(env.DB, env.UPLOADS);
+  const service = new ServicesService(repo);
+  return new ServicesController(service);
+}
 
-myServicesRouter.put(
-  "/:serviceId",
-  imageUpload("services").single("imageUrl"),
-  Validation.run(UpdateService.setup(), "body"),
-  async (req, res) => {
-    try {
-      const serviceId = req.params.serviceId as string;
-      const { serviceName, price, description, categoryId } = req.body;
-      const updatedService = await serviceController.updateService(
-        serviceId,
-        serviceName,
-        price,
-        description,
-        categoryId,
-        req.file,
-      );
-
-      if (updatedService) {
-        res.status(200).json(updatedService);
-      } else {
-        res.status(409).json({
-          message: "Failed to update Service",
-        });
-      }
-    } catch (error) {
-      throw error;
-    }
-  },
-);
-
-myServicesRouter.delete("/:serviceId", async (req, res) => {
-  try {
-    const serviceId = req.params.serviceId as string;
-    const deleted = serviceController.deleteService(serviceId);
-    if (deleted) {
-      res.status(200).json(deleted);
-    } else {
-      res.status(409).json({
-        message: "Failed to delete Service",
-      });
-    }
-  } catch (error) {
-    throw error;
+myServicesRouter.post("/", async (c) => {
+  const form = await c.req.formData();
+  const imageUrl = extractFile(form, "imageUrl", false);
+  if (!imageUrl) {
+    return c.json({ message: "Service image is required" }, 400);
   }
+
+  const serviceName = form.get("serviceName") as string;
+  const price = Number(form.get("price"));
+  const description = form.get("description") as string;
+  const categoryId = form.get("categoryId") as string;
+
+  Validation.validate(CreateService.setup(), {
+    serviceName,
+    price,
+    description,
+    categoryId,
+  });
+
+  const createdService = await getController(c.env).createService(
+    serviceName,
+    price,
+    description,
+    categoryId,
+    imageUrl,
+  );
+
+  if (createdService) {
+    return c.json(createdService, 200);
+  }
+  return c.json({ message: "Failed to Create Service" }, 409);
 });
 
-myServicesRouter.get("/all", async (req, res) => {
-  try {
-    const services = await serviceController.getAllServices();
-    res.status(200).send(services);
-  } catch (error) {
-    throw error;
+myServicesRouter.put("/:serviceId", async (c) => {
+  const serviceId = c.req.param("serviceId");
+  const form = await c.req.formData();
+  const imageUrl = extractFile(form, "imageUrl", false);
+
+  const serviceName = form.get("serviceName") as string;
+  const price = Number(form.get("price"));
+  const description = form.get("description") as string;
+  const categoryId = form.get("categoryId") as string;
+
+  Validation.validate(UpdateService.setup(), {
+    serviceName,
+    price,
+    description,
+    categoryId,
+  });
+
+  const updatedService = await getController(c.env).updateService(
+    serviceId,
+    serviceName,
+    price,
+    description,
+    categoryId,
+    imageUrl,
+  );
+
+  if (updatedService) {
+    return c.json(updatedService, 200);
   }
+  return c.json({ message: "Failed to update Service" }, 409);
 });
 
-myServicesRouter.get("/services-by-category/:categoryId", async (req, res) => {
-  try {
-    const categoryId = req.params.categoryId;
-    const categoryServices =
-      await serviceController.getServicesByCategory(categoryId);
-
-    res.status(200).json(categoryServices);
-  } catch (error) {
-    throw error;
+myServicesRouter.delete("/:serviceId", async (c) => {
+  const serviceId = c.req.param("serviceId");
+  const deleted = await getController(c.env).deleteService(serviceId);
+  if (deleted) {
+    return c.json(deleted, 200);
   }
+  return c.json({ message: "Failed to delete Service" }, 409);
+});
+
+myServicesRouter.get("/all", async (c) => {
+  const services = await getController(c.env).getAllServices();
+  return c.json(services, 200);
+});
+
+myServicesRouter.get("/services-by-category/:categoryId", async (c) => {
+  const categoryId = c.req.param("categoryId");
+  const categoryServices = await getController(c.env).getServicesByCategory(
+    categoryId,
+  );
+  return c.json(categoryServices, 200);
 });
 
 export default myServicesRouter;

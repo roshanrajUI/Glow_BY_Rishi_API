@@ -1,22 +1,22 @@
-import { NextFunction, Request, Response } from "express";
+import type { ErrorHandler } from "hono";
 import { ApiError } from "../models/api.error";
 
 export class GlobalErrorHandling {
-  public static setUp() {
-    return (err: any, req: Request, res: Response, next: NextFunction) => {
+  public static setUp(): ErrorHandler {
+    return (err, c) => {
       console.error(err);
 
       if (err instanceof ApiError) {
-        res.status(err.status).send({
-          status: err.status,
-          errorMessage: err.message,
-        });
+        return c.json(
+          { status: err.status, errorMessage: err.message },
+          err.status as any,
+        );
       }
 
-      return res.status(500).json({
-        success: false,
-        errorMessage: "Internal Server Error",
-      });
+      return c.json(
+        { success: false, errorMessage: "Internal Server Error" },
+        500,
+      );
     };
   }
 }

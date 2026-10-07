@@ -1,146 +1,100 @@
-import { Router } from "express";
-import Container from "typedi";
+import { Hono } from "hono";
+import { AppBindings } from "../types";
 import BookingsContoller from "../controllers/bookings.controller";
+import BookingService from "../services/bookings.services";
+import { BookingRepository } from "../repositories/bookings.repository";
+import { OtpRepository } from "../repositories/otp.repository";
+import { MailService } from "../services/mail.service";
 import { BookingStatus } from "../models/interfaces/booking.interfaces";
 import { Validation } from "../middlewares/validation";
 import { CreateReview } from "../models/joi-schemas/review-create";
 
-const bookingRouter = Router();
-const bookingController = Container.get(BookingsContoller);
+const bookingRouter = new Hono<{ Bindings: AppBindings }>();
 
-bookingRouter.post("/create", async (req, res) => {
-  try {
-    const booking = await bookingController.createBooking(req.body);
-    res.status(200).json(booking);
-  } catch (error) {
-    throw error;
-  }
+function getController(env: AppBindings): BookingsContoller {
+  const mailService = new MailService(env.RESEND_API_KEY);
+  const otpRepository = new OtpRepository(env.DB, mailService);
+  const bookingRepository = new BookingRepository(env.DB, mailService, otpRepository);
+  const bookingService = new BookingService(bookingRepository, otpRepository, mailService);
+  return new BookingsContoller(bookingService);
+}
+
+bookingRouter.post("/create", async (c) => {
+  const body = await c.req.json();
+  const booking = await getController(c.env).createBooking(body);
+  return c.json(booking, 200);
 });
 
-bookingRouter.get("/", async (req, res) => {
-  try {
-    const status: BookingStatus | undefined = req.query.status as
-      | BookingStatus
-      | undefined;
-    const result = await bookingController.getAllBookingsByStatus(status);
-    res.status(200).json(result);
-  } catch (error) {
-    throw error;
-  }
+bookingRouter.get("/", async (c) => {
+  const status = c.req.query("status") as BookingStatus | undefined;
+  const result = await getController(c.env).getAllBookingsByStatus(status);
+  return c.json(result, 200);
 });
 
-bookingRouter.get("/booking-reviews", async (req, res) => {
-  try {
-    const result = await bookingController.getBookingReviews();
-    res.status(200).json(result);
-  } catch (error) {
-    console.log("Error Fetching Booking Reviews", error);
-    throw error;
-  }
+bookingRouter.get("/booking-reviews", async (c) => {
+  const result = await getController(c.env).getBookingReviews();
+  return c.json(result, 200);
 });
 
-bookingRouter.get("/:bookingId", async (req, res) => {
-  try {
-    const bookingId = req.params.bookingId;
-    const result = await bookingController.getBookingById(bookingId);
-    if (result) {
-      res.status(200).send(result);
-    } else {
-      res.status(404).send({ message: "Booking not found" });
-    }
-  } catch (error) {
-    throw error;
+bookingRouter.get("/:bookingId", async (c) => {
+  const bookingId = c.req.param("bookingId");
+  const result = await getController(c.env).getBookingById(bookingId);
+  if (result) {
+    return c.json(result, 200);
   }
+  return c.json({ message: "Booking not found" }, 404);
 });
 
-bookingRouter.post("/update", async (req, res) => {
-  try {
-    const result = await bookingController.updateBooking(req.body);
-    res.status(200).send(result);
-  } catch (error) {
-    throw error;
-  }
+bookingRouter.post("/update", async (c) => {
+  const body = await c.req.json();
+  const result = await getController(c.env).updateBooking(body);
+  return c.json(result, 200);
 });
 
-bookingRouter.post(
-  "/create-review",
-  Validation.run(CreateReview.setUp(), "body"),
-  async (req, res) => {
-    try {
-      const result = await bookingController.createBookingReview(req.body);
-      res.status(200).send(result);
-    } catch (error) {
-      throw error;
-    }
-  },
-);
-
-bookingRouter.post("/update-status", async (req, res, next) => {
-  try {
-    const result = await bookingController.updateBookingStatus(req.body);
-    if (result) {
-      res.status(200).send(result);
-    } else {
-      res.status(404).send({ message: "Booking not found" });
-    }
-  } catch (error) {
-    throw error;
-  }
+bookingRouter.post("/create-review", async (c) => {
+  const body = await c.req.json();
+  Validation.validate(CreateReview.setUp(), body);
+  const result = await getController(c.env).createBookingReview(body);
+  return c.json(result, 200);
 });
 
-bookingRouter.get("/client-bookings/:clientId", async (req, res) => {
-  try {
-    const clientId = req.params.clientId;
-    const result = await bookingController.getBookingsByClientId(clientId);
-    res.status(200).send(result);
-  } catch (error) {
-    throw error;
+bookingRouter.post("/update-status", async (c) => {
+  const body = await c.req.json();
+  const result = await getController(c.env).updateBookingStatus(body);
+  if (result) {
+    return c.json(result, 200);
   }
+  return c.json({ message: "Booking not found" }, 404);
 });
 
-bookingRouter.get(
-  "/client-bookings/by-phonenumber/:phoneNumber",
-  async (req, res) => {
-    try {
-      const phoneNumber = req.params.phoneNumber;
-      const result =
-        await bookingController.getBookingsByClientPhoneNumber(phoneNumber);
-      res.status(200).send(result);
-    } catch (error) {
-      throw error;
-    }
-  },
-);
-
-bookingRouter.post("/client-bookings", async (req, res) => {
-  try {
-    const bookings = await bookingController.getClientBooking(req.body);
-    res.status(200).send(bookings);
-  } catch (error) {
-    throw error;
-  }
+bookingRouter.get("/client-bookings/:clientId", async (c) => {
+  const clientId = c.req.param("clientId");
+  const result = await getController(c.env).getBookingsByClientId(clientId);
+  return c.json(result, 200);
 });
 
-bookingRouter.post("/verify-booking", async (req, res) => {
-  try {
-    const isVerified = await bookingController.verifyBooking(req.body);
-    if (isVerified) {
-      res.status(200).send(isVerified);
-    }
-  } catch (error) {
-    throw error;
-  }
+bookingRouter.get("/client-bookings/by-phonenumber/:phoneNumber", async (c) => {
+  const phoneNumber = c.req.param("phoneNumber");
+  const result = await getController(c.env).getBookingsByClientPhoneNumber(phoneNumber);
+  return c.json(result, 200);
 });
 
-bookingRouter.post("/resend-otp", async (req, res) => {
-  try {
-    const resend = await bookingController.resendOtp(req.body);
-    if (resend) {
-      res.status(200).send(resend);
-    }
-  } catch (error) {
-    throw error;
-  }
+bookingRouter.post("/client-bookings", async (c) => {
+  const body = await c.req.json();
+  const bookings = await getController(c.env).getClientBooking(body);
+  return c.json(bookings, 200);
+});
+
+bookingRouter.post("/verify-booking", async (c) => {
+  const body = await c.req.json();
+  const isVerified = await getController(c.env).verifyBooking(body);
+  return c.json(isVerified, 200);
+});
+
+bookingRouter.post("/resend-otp", async (c) => {
+  const body = await c.req.json();
+  const resend = await getController(c.env).resendOtp(body);
+  return c.json(resend, 200);
 });
 
 export default bookingRouter;

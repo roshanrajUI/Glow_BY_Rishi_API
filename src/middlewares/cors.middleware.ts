@@ -1,32 +1,35 @@
-import { Application, NextFunction, Request, Response } from "express";
+import type { MiddlewareHandler } from "hono";
 
-const allowedOrigins = (req: Request, res: Response, next: NextFunction) => {
-  const allowOrigins = [
-    "http://localhost:4200",
-    "http://localhost:8000",
-    "https://glowbyrishi.in",
-    "https://glow-by-rishi-ui.onrender.com",
-  ];
-  const origin = req.headers.origin!;
-  const host = req.headers.host!;
-  if (origin && allowOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
+const allowOrigins = [
+  "http://localhost:4200",
+  "http://localhost:8000",
+  "https://glowbyrishi.in",
+  "https://www.glowbyrishi.in",
+  "https://glow-by-rishi-ui.onrender.com",
+];
+
+function isAllowedOrigin(origin: string): boolean {
+  if (allowOrigins.includes(origin)) {
+    return true;
   }
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  return /^https:\/\/[a-z0-9-]+\.pages\.dev$/i.test(origin);
+}
 
-  res.setHeader(
+export const CorsMiddleware: MiddlewareHandler = async (c, next) => {
+  const origin = c.req.header("Origin");
+  if (origin && isAllowedOrigin(origin)) {
+    c.header("Access-Control-Allow-Origin", origin);
+    c.header("Vary", "Origin");
+  }
+  c.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  c.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, token, Authorization",
   );
 
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
+  if (c.req.method === "OPTIONS") {
+    return c.body(null, 200);
   }
 
-  next();
+  await next();
 };
-export class CorsMiddleware {
-  public static setup(express: Application) {
-    express.use(allowedOrigins);
-  }
-}

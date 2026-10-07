@@ -1,86 +1,84 @@
-import { Router, Request, Response } from "express";
-import Container from "typedi";
+import { Hono } from "hono";
+import { AppBindings } from "../types";
 import { ClientController } from "../controllers/client.controller";
+import { ClientService } from "../services/client.service";
+import ClientsRepository from "../repositories/clients.repository";
 
-const clientRouter = Router();
-const clientController = Container.get(ClientController);
+const clientRouter = new Hono<{ Bindings: AppBindings }>();
 
-clientRouter.post("/", async (req: Request, res: Response) => {
+function getController(env: AppBindings): ClientController {
+  const repo = new ClientsRepository(env.DB);
+  const service = new ClientService(repo);
+  return new ClientController(service);
+}
+
+clientRouter.post("/", async (c) => {
   try {
-    const client = await clientController.createClient(req.body);
-    res.status(201).send(client);
+    const body = await c.req.json();
+    const client = await getController(c.env).createClient(body);
+    return c.json(client, 201);
   } catch (error) {
     console.error("Error creating client:", error);
-    res.status(500).send({ error: "Failed to create client" });
+    return c.json({ error: "Failed to create client" }, 500);
   }
 });
 
-clientRouter.get("/", async (req: Request, res: Response) => {
+clientRouter.get("/", async (c) => {
   try {
-    const clients = await clientController.getAllClients();
-    res.status(200).send(clients);
+    const clients = await getController(c.env).getAllClients();
+    return c.json(clients, 200);
   } catch (error) {
     console.error("Error fetching clients:", error);
-    res.status(500).send({ error: "Failed to fetch clients" });
+    return c.json({ error: "Failed to fetch clients" }, 500);
   }
 });
 
-clientRouter.get(
-  "/:phoneNumber",
-  async (req: Request<{ phoneNumber: string }>, res: Response) => {
-    try {
-      const client = await clientController.getClientByNumber(
-        req.params.phoneNumber,
-      );
-      if (client) {
-        res.status(200).send(client);
-      } else {
-        res.status(404).send({ error: "Client not found" });
-      }
-    } catch (error) {
-      console.error("Error fetching client:", error);
-      res.status(500).send({ error: "Failed to fetch client" });
+clientRouter.get("/:phoneNumber", async (c) => {
+  try {
+    const client = await getController(c.env).getClientByNumber(
+      c.req.param("phoneNumber"),
+    );
+    if (client) {
+      return c.json(client, 200);
     }
-  },
-);
+    return c.json({ error: "Client not found" }, 404);
+  } catch (error) {
+    console.error("Error fetching client:", error);
+    return c.json({ error: "Failed to fetch client" }, 500);
+  }
+});
 
-clientRouter.post(
-  "/delete/:phoneNumber",
-  async (req: Request<{ phoneNumber: string }>, res: Response) => {
-    try {
-      const phoneNumber = req.params.phoneNumber;
-      const client = await clientController.getClientByNumber(phoneNumber);
-      if (client) {
-        await clientController.deleteClientByNumber(phoneNumber);
-        res.status(200).send({ message: "Client deleted successfully" });
-      } else {
-        res.status(404).send({ error: "Client not found" });
-      }
-    } catch (error) {
-      console.error("Error deleting client:", error);
-      res.status(500).send({ error: "Failed to delete client" });
+clientRouter.post("/delete/:phoneNumber", async (c) => {
+  try {
+    const phoneNumber = c.req.param("phoneNumber");
+    const controller = getController(c.env);
+    const client = await controller.getClientByNumber(phoneNumber);
+    if (client) {
+      await controller.deleteClientByNumber(phoneNumber);
+      return c.json({ message: "Client deleted successfully" }, 200);
     }
-  },
-);
+    return c.json({ error: "Client not found" }, 404);
+  } catch (error) {
+    console.error("Error deleting client:", error);
+    return c.json({ error: "Failed to delete client" }, 500);
+  }
+});
 
-clientRouter.post(
-  "/update/:phoneNumber",
-  async (req: Request<{ phoneNumber: string }>, res: Response) => {
-    try {
-      const client = await clientController.updateClientByNumber(
-        req.params.phoneNumber,
-        req.body,
-      );
-      if (client) {
-        res.status(200).send(client);
-      } else {
-        res.status(404).send({ error: "Client not found" });
-      }
-    } catch (error) {
-      console.error("Error updating client:", error);
-      res.status(500).send({ error: "Failed to update client" });
+clientRouter.post("/update/:phoneNumber", async (c) => {
+  try {
+    const body = await c.req.json();
+    const client = await getController(c.env).updateClientByNumber(
+      c.req.param("phoneNumber"),
+      body,
+    );
+    if (client) {
+      return c.json(client, 200);
     }
-  },
-);
+    return c.json({ error: "Client not found" }, 404);
+  } catch (error) {
+    console.error("Error updating client:", error);
+    return c.json({ error: "Failed to update client" }, 500);
+  }
+});
 
 export default clientRouter;

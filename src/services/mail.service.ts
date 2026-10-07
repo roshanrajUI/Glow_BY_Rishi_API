@@ -1,14 +1,12 @@
 import { Resend } from "resend";
-import { Service } from "typedi";
 import { ApiError } from "../models/api.error";
 import { VerifyBooking } from "../models/interfaces/booking.interfaces";
 
-@Service()
 export class MailService {
   private resend: Resend;
 
-  constructor() {
-    this.resend = new Resend(process.env.RESEND_API_KEY);
+  constructor(apiKey: string) {
+    this.resend = new Resend(apiKey);
   }
 
   async sendMail(to: string, subject: string, html: string): Promise<void> {

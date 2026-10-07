@@ -1,93 +1,90 @@
-import { Router } from "express";
+import { Hono } from "hono";
+import { AppBindings } from "../types";
 import MyWorkController from "../controllers/my-work.controller";
-import { Container } from "typedi";
+import MyWorkService from "../services/my-work.service";
+import { MyWorkRepository } from "../repositories/my-works.repository";
 import { Validation } from "../middlewares/validation";
 import { CreateMyWork } from "../models/joi-schemas/work-create";
-import { imageUpload } from "../middlewares/image-upload";
+import { extractFile } from "../lib/image-upload";
 
-const myWorkRouter = Router();
-const myWorkController = Container.get(MyWorkController);
+const myWorkRouter = new Hono<{ Bindings: AppBindings }>();
 
-myWorkRouter.post("/all", async (req, res) => {
-  try {
-    let { myWorkId, serviceId, pageSize, pageNumber } = req.body;
+function getController(env: AppBindings): MyWorkController {
+  const repo = new MyWorkRepository(env.DB, env.UPLOADS);
+  const service = new MyWorkService(repo);
+  return new MyWorkController(service);
+}
 
-    const reqBody = {
-      serviceId,
-      myWorkId,
-      pageSize: pageSize || 10,
-      pageNumber: pageNumber || 1,
-    };
-    const result = await myWorkController.getMyWorks(reqBody);
-    res.status(200).send(result);
-  } catch (error) {
-    throw error;
-  }
+myWorkRouter.post("/all", async (c) => {
+  const body = await c.req.json();
+  const { categoryId, serviceId, pageSize, pageNumber } = body;
+
+  const reqBody = {
+    serviceId,
+    categoryId,
+    pageSize: pageSize || 10,
+    pageNumber: pageNumber || 1,
+  };
+  const result = await getController(c.env).getMyWorks(reqBody);
+  return c.json(result, 200);
 });
 
-myWorkRouter.post(
-  "/",
-  imageUpload("my-works").single("imageUrl"),
-  Validation.run(CreateMyWork.setUp(), "body"),
-  async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: "Service image is required" });
-      }
-      const { serviceId, title, description } = req.body;
-      const myWork = await myWorkController.createMyWork(
-        serviceId,
-        title,
-        description,
-        req.file,
-      );
-      if (myWork) {
-        res.status(200).json(myWork);
-      }
-    } catch (error) {
-      throw error;
-    }
-  },
-);
-
-myWorkRouter.put(
-  "/:myWorkId",
-  imageUpload("my-works").single("imageUrl"),
-  Validation.run(CreateMyWork.setUp(), "body"),
-  async (req, res) => {
-    try {
-      const myWorkId = req.params.myWorkId as string;
-      const { serviceId, title, description } = req.body;
-      const updated = await myWorkController.updatemyWork(
-        myWorkId,
-        serviceId,
-        title,
-        description,
-        req.file,
-      );
-      res.status(200).send(updated);
-    } catch (error) {
-      throw error;
-    }
-  },
-);
-
-myWorkRouter.get("/all", async (req, res) => {
-  try {
-    const categories = await myWorkController.getMyWorks(req.body);
-    res.status(200).json(categories);
-  } catch (error) {
-    throw error;
+myWorkRouter.post("/", async (c) => {
+  const form = await c.req.formData();
+  const imageUrl = extractFile(form, "imageUrl", false);
+  if (!imageUrl) {
+    return c.json({ message: "Service image is required" }, 400);
   }
+
+  const serviceId = form.get("serviceId") as string;
+  const title = form.get("title") as string;
+  const description = form.get("description") as string;
+
+  Validation.validate(CreateMyWork.setUp(), { serviceId, title, description });
+
+  const myWork = await getController(c.env).createMyWork(
+    serviceId,
+    title,
+    description,
+    imageUrl,
+  );
+  if (myWork) {
+    return c.json(myWork, 200);
+  }
+  return c.body(null, 200);
 });
 
-myWorkRouter.delete("/:myWorkId", async (req, res, next) => {
-  try {
-    const myWorkId = req.params.myWorkId;
-    const myWork = await myWorkController.deleteMyWork(myWorkId);
-    res.status(200).json(myWork);
-  } catch (error) {
-    throw error;
-  }
+myWorkRouter.put("/:myWorkId", async (c) => {
+  const myWorkId = c.req.param("myWorkId");
+  const form = await c.req.formData();
+  const imageUrl = extractFile(form, "imageUrl", false);
+
+  const serviceId = form.get("serviceId") as string;
+  const title = form.get("title") as string;
+  const description = form.get("description") as string;
+
+  Validation.validate(CreateMyWork.setUp(), { serviceId, title, description });
+
+  const updated = await getController(c.env).updatemyWork(
+    myWorkId,
+    serviceId,
+    title,
+    description,
+    imageUrl,
+  );
+  return c.json(updated, 200);
 });
+
+myWorkRouter.get("/all", async (c) => {
+  const body = await c.req.json().catch(() => ({}));
+  const result = await getController(c.env).getMyWorks(body);
+  return c.json(result, 200);
+});
+
+myWorkRouter.delete("/:myWorkId", async (c) => {
+  const myWorkId = c.req.param("myWorkId");
+  const myWork = await getController(c.env).deleteMyWork(myWorkId);
+  return c.json(myWork, 200);
+});
+
 export default myWorkRouter;

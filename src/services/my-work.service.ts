@@ -1,4 +1,3 @@
-import { Service } from "typedi";
 import { MyWorkRepository } from "../repositories/my-works.repository";
 import {
   MyWorkCreate,
@@ -7,7 +6,6 @@ import {
 import WorkPortfolio from "../models/entities/work-portfolio.entity";
 import { MyWorkRequest } from "../models/interfaces/my-work.interfaces";
 
-@Service()
 export default class MyWorkService {
   constructor(private readonly myWorkRepository: MyWorkRepository) {}
 
@@ -19,7 +17,7 @@ export default class MyWorkService {
 
   async createMyWork(
     myWork: MyWorkCreate,
-    image: Express.Multer.File,
+    image: File,
   ): Promise<Boolean> {
     return this.myWorkRepository.createMyWork(myWork, image);
   }

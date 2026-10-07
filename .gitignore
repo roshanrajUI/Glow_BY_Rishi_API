@@ -1,3 +1,9 @@
+# Cloudflare Workers
+.wrangler
+.dev.vars
+worker-configuration.d.ts
+uploads/
+
 # Logs
 logs
 *.log

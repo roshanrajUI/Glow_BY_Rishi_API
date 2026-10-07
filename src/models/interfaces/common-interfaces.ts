@@ -8,14 +8,14 @@ export interface PaginationWithData<T> {
 export interface CategoryCreate {
   categoryId?: string;
   categoryName: string;
-  imageUrl: Express.Multer.File;
+  imageUrl: File;
   description: string;
   isActive?: boolean;
 }
 
 export interface CategoryUpdate {
   categoryName: string;
-  imageUrl?: Express.Multer.File;
+  imageUrl?: File;
   description?: string;
   isActive?: boolean;
 }
@@ -26,7 +26,7 @@ export interface ServiceCreate {
   serviceName: string;
   price: number;
   description: string;
-  imageUrl?: Express.Multer.File;
+  imageUrl?: File;
 }
 
 export interface ServiceUpdate {
@@ -35,14 +35,14 @@ export interface ServiceUpdate {
   serviceName: string;
   price: number;
   description?: string;
-  imageUrl?: Express.Multer.File;
+  imageUrl?: File;
 }
 
 export interface MyWorkCreate {
   serviceId: string;
   title: string;
   description: string;
-  imageUrl?: Express.Multer.File;
+  imageUrl?: File;
   userId?: string;
 }
 
@@ -50,7 +50,7 @@ export interface MyWorkUpdate {
   serviceId: string;
   title: string;
   description: string;
-  imageUrl?: Express.Multer.File;
+  imageUrl?: File;
   userId?: string;
 }
 

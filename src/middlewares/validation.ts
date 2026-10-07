@@ -1,23 +1,24 @@
-import { NextFunction, Request, Response } from "express";
-import Joi from "joi";
+import type Joi from "joi";
+import { ApiError } from "../models/api.error";
 
 export class Validation {
-  public static run(schema: Joi.Schema, query: "body" | "query" | "params") {
-    return (req: Request, res: Response, next: NextFunction) => {
-      const { error, value } = schema.validate(req[query], {
-        abortEarly: false,
-        stripUnknown: true,
-      });
+  /**
+   * Validates `data` against a Joi schema and returns the sanitized value.
+   * Throws an ApiError(422) on failure, handled centrally by
+   * GlobalErrorHandling (replaces the old Express middleware that ran
+   * before each route handler).
+   */
+  public static validate<T>(schema: Joi.Schema, data: unknown): T {
+    const { error, value } = schema.validate(data, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
 
-      if (!error) {
-        req[query] = value;
-        return next();
-      }
+    if (error) {
+      const message = error.details.map((err) => err.message).join(", ");
+      throw new ApiError(422, message);
+    }
 
-      const message = error.details.map((err) => err.message);
-      return res.status(422).json({
-        error: message,
-      });
-    };
+    return value as T;
   }
 }
