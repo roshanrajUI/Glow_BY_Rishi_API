@@ -2,18 +2,26 @@ import { Resend } from "resend";
 import { ApiError } from "../models/api.error";
 import { VerifyBooking } from "../models/interfaces/booking.interfaces";
 
+const DEFAULT_FROM = "Glow By Rishi <booking@glowbyrishi.in>";
+const DEFAULT_REPLY_TO = "glowbyrishitha@gmail.com";
+
 export class MailService {
   private resend: Resend;
+  private fromAddress: string;
+  private replyTo: string;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, fromAddress: string = DEFAULT_FROM, replyTo: string = DEFAULT_REPLY_TO) {
     this.resend = new Resend(apiKey);
+    this.fromAddress = fromAddress;
+    this.replyTo = replyTo;
   }
 
   async sendMail(to: string, subject: string, html: string): Promise<void> {
     try {
       const { data, error } = await this.resend.emails.send({
-        from: "onboarding@resend.dev",
-        to: "roshanraj.ui499@gmail.com",
+        from: this.fromAddress,
+        to,
+        replyTo: this.replyTo,
         subject,
         html,
       });

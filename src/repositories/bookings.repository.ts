@@ -110,6 +110,16 @@ export class BookingRepository {
     private readonly otpRepository: OtpRepository,
   ) {}
 
+  // Status-change notification emails are a side effect; a mail provider
+  // failure shouldn't prevent the booking status itself from being updated.
+  private async sendStatusMailSafely(send: () => Promise<void>): Promise<void> {
+    try {
+      await send();
+    } catch (err) {
+      console.error("Failed to send booking status email:", err);
+    }
+  }
+
   private async attachBookingServices(bookings: Booking[]): Promise<Booking[]> {
     if (bookings.length === 0) return bookings;
     const ids = bookings.map((b) => b.bookingId);
@@ -207,8 +217,15 @@ export class BookingRepository {
     }
 
     const createdBooking = await this.getBookingById(bookingId);
-    const bookingOtp = await this.otpRepository.createOtp(bookingNumber, gmail);
-    await this.mailService.verifyBookingMail({ gmail, bookingNumber, otp: bookingOtp });
+    try {
+      const bookingOtp = await this.otpRepository.createOtp(bookingNumber, gmail);
+      await this.mailService.verifyBookingMail({ gmail, bookingNumber, otp: bookingOtp });
+    } catch (err) {
+      // Booking is already persisted (status: OTP Pending); don't fail the whole
+      // request just because the OTP email couldn't be sent (e.g. mail provider
+      // misconfigured). The client can use "resend-otp" once mail is fixed.
+      console.error("Failed to create/send booking OTP:", err);
+    }
 
     return createdBooking!;
   }
@@ -361,16 +378,18 @@ export class BookingRepository {
 
     switch (bookingStatus) {
       case "Confirmed":
-        await this.mailService.bookingConfirmed(bookingNumber, clientName, gmail);
+        await this.sendStatusMailSafely(() => this.mailService.bookingConfirmed(bookingNumber, clientName, gmail));
         break;
       case "Completed":
-        await this.mailService.bookingCompleted(bookingNumber, clientName, gmail);
+        await this.sendStatusMailSafely(() => this.mailService.bookingCompleted(bookingNumber, clientName, gmail));
         break;
       case "Cancelled":
         if (!reason) {
           throw new ApiError(409, "Please Fill the Reason");
         }
-        await this.mailService.bookingCancel(bookingNumber, clientName, gmail, reason);
+        await this.sendStatusMailSafely(() =>
+          this.mailService.bookingCancel(bookingNumber, clientName, gmail, reason),
+        );
         break;
       default:
         throw new ApiError(409, "Invalid Booking Status");
