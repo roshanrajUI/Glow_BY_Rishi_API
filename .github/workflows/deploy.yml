@@ -45,9 +45,6 @@ jobs:
       - name: Health check
         run: |
           sleep 5
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://glow-by-rishi-api.one43sanju.workers.dev/api/health)
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://api.glowbyrishi.in/api/health)
           echo "API health status: $STATUS"
           [ "$STATUS" = "200" ] || exit 1
-          # Once api.glowbyrishi.in is added as a Cloudflare zone and the
-          # custom domain route is re-enabled in wrangler.jsonc, switch this
-          # health check back to https://api.glowbyrishi.in/api/health

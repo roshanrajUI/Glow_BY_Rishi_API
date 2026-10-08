@@ -21,8 +21,6 @@
       "bucket_name": "glow-by-rishi-uploads"
     }
   ],
-  // NOTE: custom domain route disabled until glowbyrishi.in is added as a
-  // Cloudflare zone on this account. Once DNS is managed here, re-add:
-  // "routes": [{ "pattern": "api.glowbyrishi.in", "custom_domain": true }]
+  "routes": [{ "pattern": "api.glowbyrishi.in", "custom_domain": true }],
   "workers_dev": true
 }
