@@ -1,4 +1,5 @@
 import Client from "../entities/clients.entity";
+import type MyBookingServices from "../entities/booking-services.entity";
 
 export type BookingStatus =
   | "OTP Pending"
@@ -27,6 +28,7 @@ export interface BookingReviews {
   reviewDate?: Date;
   isActive: boolean;
   client: Client;
+  bookingServices: MyBookingServices[];
 }
 
 export interface CreateBooking {

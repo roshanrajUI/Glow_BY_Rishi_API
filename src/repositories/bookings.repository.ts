@@ -268,6 +268,7 @@ export class BookingRepository {
           reviewText,
           isActive,
           client,
+          bookingServices,
         } = booking;
 
         return {
@@ -282,6 +283,7 @@ export class BookingRepository {
           reviewText,
           isActive,
           client,
+          bookingServices,
         };
       });
   }
