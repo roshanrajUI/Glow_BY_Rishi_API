@@ -217,6 +217,9 @@ export class BookingRepository {
     }
 
     const createdBooking = await this.getBookingById(bookingId);
+    if (createdBooking) {
+      await this.sendStatusMailSafely(() => this.mailService.adminNewBookingMail(createdBooking));
+    }
     try {
       const bookingOtp = await this.otpRepository.createOtp(bookingNumber, gmail);
       await this.mailService.verifyBookingMail({ gmail, bookingNumber, otp: bookingOtp });
