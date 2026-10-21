@@ -10,8 +10,16 @@ export class MailService {
   private fromAddress: string;
   private replyTo: string;
 
-  constructor(apiKey: string, fromAddress: string = DEFAULT_FROM, replyTo: string = DEFAULT_REPLY_TO) {
+  private adminEmail: string;
+
+  constructor(
+    apiKey: string,
+    adminEmail: string = DEFAULT_REPLY_TO,
+    fromAddress: string = DEFAULT_FROM,
+    replyTo: string = DEFAULT_REPLY_TO,
+  ) {
     this.resend = new Resend(apiKey);
+    this.adminEmail = adminEmail || DEFAULT_REPLY_TO;
     this.fromAddress = fromAddress;
     this.replyTo = replyTo;
   }
@@ -21,6 +29,8 @@ export class MailService {
       const { data, error } = await this.resend.emails.send({
         from: this.fromAddress,
         to,
+        // Every outgoing mail is blind-copied to the admin
+        bcc: to.toLowerCase() === this.adminEmail.toLowerCase() ? undefined : this.adminEmail,
         replyTo: this.replyTo,
         subject,
         html,

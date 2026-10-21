@@ -12,7 +12,7 @@ import { CreateReview } from "../models/joi-schemas/review-create";
 const bookingRouter = new Hono<{ Bindings: AppBindings }>();
 
 function getController(env: AppBindings): BookingsContoller {
-  const mailService = new MailService(env.RESEND_API_KEY);
+  const mailService = new MailService(env.RESEND_API_KEY, env.ADMIN_EMAIL);
   const otpRepository = new OtpRepository(env.DB, mailService);
   const bookingRepository = new BookingRepository(env.DB, mailService, otpRepository);
   const bookingService = new BookingService(bookingRepository, otpRepository, mailService);

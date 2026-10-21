@@ -98,11 +98,16 @@ export default class BookingService {
     booking.status = "Pending";
     const isBookingDone = await this.updateBooking(booking);
     if (booking.isOtpVerified) {
-      this.mailService.bookingSuccessMail(
-        isBookingDone.client.clientName,
-        bookingDetails.gmail,
-        bookingDetails.bookingNumber,
-      );
+      // Must be awaited: un-awaited work can be cancelled once the Worker responds.
+      try {
+        await this.mailService.bookingSuccessMail(
+          isBookingDone.client.clientName,
+          bookingDetails.gmail,
+          bookingDetails.bookingNumber,
+        );
+      } catch (err) {
+        console.error("Failed to send booking confirmation email:", err);
+      }
     }
     return isBookingDone.isOtpVerified;
   }

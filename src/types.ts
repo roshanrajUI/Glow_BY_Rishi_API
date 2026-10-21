@@ -1,5 +1,6 @@
 export interface AppBindings extends Env {
   RESEND_API_KEY: string;
+  ADMIN_EMAIL?: string;
 }
 
 /**
